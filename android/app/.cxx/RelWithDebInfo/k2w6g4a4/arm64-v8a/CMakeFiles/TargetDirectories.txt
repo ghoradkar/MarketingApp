@@ -1,0 +1,2 @@
+D:/marketingapp/marketingapp/android/app/.cxx/RelWithDebInfo/k2w6g4a4/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/marketingapp/marketingapp/android/app/.cxx/RelWithDebInfo/k2w6g4a4/arm64-v8a/CMakeFiles/rebuild_cache.dir

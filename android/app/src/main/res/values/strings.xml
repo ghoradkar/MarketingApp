@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lifenityOperational" translatable="false">Lifenity Operational</string>
+    <string name="lifenityInternational" translatable="false">Lifenity International</string>
+    <string name="pluscareOperational" translatable="false">PlusCare Operational</string>
+    <string name="hindLabOperational" translatable="false">HindLab Operational</string>
+    <string name="cscOperational" translatable="false">CSC Healthcare Operational</string>
+
+</resources>

@@ -1,0 +1,2 @@
+D:/marketingapp/marketingapp/android/app/.cxx/Debug/5z135e3z/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/marketingapp/marketingapp/android/app/.cxx/Debug/5z135e3z/armeabi-v7a/CMakeFiles/rebuild_cache.dir
