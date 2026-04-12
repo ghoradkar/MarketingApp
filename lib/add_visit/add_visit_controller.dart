@@ -281,7 +281,9 @@ class AddVisitController extends GetxController {
               settings:
                   RouteSettings(name: MyVisitsScreen.routeName, arguments: {
                 'appBarTitle':
-                (userType == "Manager" || userType == "Lab Sales Manager") ? "Visit Dashboard" : 'My Visits',
+                    (userType == "Manager" || userType == "Lab Sales Manager")
+                        ? "Visit Dashboard"
+                        : 'My Visits',
               })),
           (route) => route.settings.name == DashboardScreen.routeName,
         );

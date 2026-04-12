@@ -28,6 +28,8 @@ class MyVisitControllerController extends GetxController {
 
   String? fullAddress;
 
+  bool _isLocationFetching = false;
+
   // getDistrictList(String? stateCode) async {
   //   // isLoading = true;
   //   // update();
@@ -242,6 +244,8 @@ class MyVisitControllerController extends GetxController {
   // }
 
   Future<void> getLocation() async {
+    if (_isLocationFetching) return;
+    _isLocationFetching = true;
     try {
       // First check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -265,6 +269,7 @@ class MyVisitControllerController extends GetxController {
     } catch (e) {
       _handleLocationError(e);
     } finally {
+      _isLocationFetching = false;
       CustomMessage.hideLoader();
       update();
     }

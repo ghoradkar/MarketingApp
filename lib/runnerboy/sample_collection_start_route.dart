@@ -88,7 +88,7 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
     // collectSampleController.isRouteStartedInitially =
     //     await SampleCollectionController.shouldShowStartRouteButton();
 
-    myVisitControllerController.getLocation();
+    await myVisitControllerController.getLocation();
     await collectSampleController
         .getSampleCollectedList(userData['output'][0]['EmpCode'].toString());
     await collectSampleController.startRouteSampleCollection(

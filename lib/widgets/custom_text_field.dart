@@ -17,6 +17,7 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController? txtController;
   final Color fillColor;
   final int? maxLines;
+  final int? minLines;
   final int? mazLenght;
   final Function? onChanged;
   final Function? onTap;
@@ -37,6 +38,7 @@ class CustomTextField extends StatefulWidget {
     required this.fillColor,
     required this.isReadOnly,
     this.maxLines,
+    this.minLines,
     this.onChanged,
     this.identification,
     this.mazLenght,
@@ -97,6 +99,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           obscureText: widget.obscureText ?? false,
           style: TextStyle(fontSize: widget.fontSize),
           maxLines: widget.maxLines,
+          minLines: widget.minLines,
           initialValue: widget.initialValue,
           maxLength: widget.mazLenght,
           readOnly: widget.isReadOnly,
