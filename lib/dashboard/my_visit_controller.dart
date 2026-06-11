@@ -323,8 +323,13 @@ class MyVisitControllerController extends GetxController {
     try {
       CustomMessage.showLoader();
 
+      final LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 100,
+      );
+
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: locationSettings,
       );
 
       latitude = position.latitude;

@@ -40,21 +40,21 @@ android {
 //                }
 
         ///for pluscare op old
-        release {
-            storeFile file('D:/marketingapp/marketingapp/android/app/old_pluscare_jks/pluscareoperational.jks')
-            storePassword 'Avante@123'
-            keyAlias 'pluscareoperational'
-            keyPassword 'Avante@123'
-        }
+//        release {
+//            storeFile file('D:/marketingapp/marketingapp/android/app/old_pluscare_jks/pluscareoperational.jks')
+//            storePassword 'Avante@123'
+//            keyAlias 'pluscareoperational'
+//            keyPassword 'Avante@123'
+//        }
 
         ///for pluscare op new
         ///use for csc aslo
-//        release {
-//            storeFile file('pluscareOperational.jks')
-//            storePassword 'pluscarenew'
-//            keyAlias 'pluscareKey'
-//            keyPassword 'pluscarenew'
-//        }
+        release {
+            storeFile file('pluscareOperational.jks')
+            storePassword 'pluscarenew'
+            keyAlias 'pluscareKey'
+            keyPassword 'pluscarenew'
+        }
 
 
 //        release {
@@ -104,29 +104,29 @@ android {
         }
 
         // Plucare Operational Old
-        pluscareOperational {
-            dimension "app"
-            versionCode 24
-            versionName "4.4.0"
-            applicationId "com.innowavehealthcare.pluscarecollectionboy"
-            manifestPlaceholders = [
-                    appIcon: "@mipmap/pluscare_operational",
-                    appName: "@string/pluscareOperational"
-            ]
-        }
-
-
-        // Plucare Operational new
 //        pluscareOperational {
 //            dimension "app"
-//            versionCode 3
-//            versionName "1.2.1"
-//            applicationId "com.pluscare.operational"
+//            versionCode 24
+//            versionName "4.4.0"
+//            applicationId "com.innowavehealthcare.pluscarecollectionboy"
 //            manifestPlaceholders = [
 //                    appIcon: "@mipmap/pluscare_operational",
 //                    appName: "@string/pluscareOperational"
 //            ]
 //        }
+
+
+        // Plucare Operational new
+        pluscareOperational {
+            dimension "app"
+            versionCode 4
+            versionName "1.3.0"
+            applicationId "com.pluscare.operational"
+            manifestPlaceholders = [
+                    appIcon: "@mipmap/pluscare_operational",
+                    appName: "@string/pluscareOperational"
+            ]
+        }
 
         // HindLab Operational
         hindLabOperational {

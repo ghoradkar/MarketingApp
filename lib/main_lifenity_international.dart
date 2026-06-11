@@ -11,14 +11,14 @@
       color: const Color(0xFF24ABE3),
       location: BannerLocation.bottomStart,
       variables: {
-        "baseUrl":
-              "http://betaae.lifenitycare.com/webservice/UAEOpreational.asmx",//dev
-        "baseUrl1":
-            "http://betaae.lifenitycare.com/webservice/UAEMarketingExApp.asmx",//dev
-        // "baseUrl":"https://registration.lifenity.ae/webservice/UAEOpreational.asmx",
-        // //prod
+        // "baseUrl":
+        //       "http://betaae.lifenitycare.com/webservice/UAEOpreational.asmx",//dev
         // "baseUrl1":
-        //     "https://registration.lifenity.ae/webservice/UAEMarketingExApp.asmx",
+        //     "http://betaae.lifenitycare.com/webservice/UAEMarketingExApp.asmx",//dev
+        "baseUrl":"https://registration.lifenity.ae/webservice/UAEOpreational.asmx",
+        //prod
+        "baseUrl1":
+            "https://registration.lifenity.ae/webservice/UAEMarketingExApp.asmx",
         // prod
         "aapLogo": "assets/uae.png",
         "secondaryColor": "0xFF04B35A",
