@@ -21,21 +21,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Upgrader? upgrader;
+  final upgrader = Upgrader(
+    debugLogging: true,
+    minAppVersion: '1.3.0',
+    messages: _AppUpgraderMessages(),
+  );
 
   final LoginController loginController = Get.find<LoginController>();
 
   @override
   void initState() {
-    // TODO: implement initState
-    initUpgrader();
-    checkInternetAndLoadData();
     super.initState();
-  }
-
-  initUpgrader() async {
-    await Upgrader.clearSavedSettings();
-    upgrader = Upgrader(debugLogging: true);
+    Upgrader.clearSavedSettings();
+    checkInternetAndLoadData();
   }
 
   checkInternetAndLoadData() async {
@@ -75,13 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (controller) {
                   return UpgradeAlert(
                     shouldPopScope: () => false,
+                    barrierDismissible: false,
                     showIgnore: false,
                     showLater: false,
                     dialogStyle: UpgradeDialogStyle.material,
-                    upgrader: upgrader ??
-                        Upgrader(
-                          debugLogging: true,
-                        ),
+                    upgrader: upgrader,
                     child: Container(
                       width: double.infinity,
                       height: double.infinity,
@@ -161,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               ).paddingOnly(bottom: 2, top: 2),
                                               CustomText(
                                                 text:
-                                                    'Welcome! Enter Registered Mobile Number & Password\nTo Continue.',
+                                                    'Welcome! Enter Registered Mobile Number & Password To Continue.',
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.normal,
                                                 textColor: AppColor.black,
@@ -369,5 +365,27 @@ class _LoginScreenState extends State<LoginScreen> {
         //     },
         //   ),
         );
+  }
+}
+
+class _AppUpgraderMessages extends UpgraderMessages {
+  @override
+  String? message(UpgraderMessage messageKey) {
+    switch (messageKey) {
+      case UpgraderMessage.title:
+        return 'Update Available';
+      case UpgraderMessage.body:
+        return 'A new version of ${FlavorConfig.instance.name} is available!';
+      case UpgraderMessage.prompt:
+        return 'Would you like to update?';
+      case UpgraderMessage.buttonTitleUpdate:
+        return 'Update Now';
+      case UpgraderMessage.buttonTitleLater:
+        return 'Later';
+      case UpgraderMessage.buttonTitleIgnore:
+        return 'Ignore';
+      default:
+        return super.message(messageKey);
+    }
   }
 }
