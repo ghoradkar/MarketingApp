@@ -97,4 +97,6 @@ class ApiConstants {
   static const String searchBusiness = "/GetBuisnessDashboard";
   static const String bloodGroupList = "/GetBloodGroupList";
   static const String getBankDetailsList = "/GetBank";
+  static const String sampleCollectionHistory =
+      "/GetSampleCollectionHistoryDateWise";
 }

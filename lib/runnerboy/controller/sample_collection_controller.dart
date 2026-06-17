@@ -15,6 +15,7 @@ import 'package:marketingapp/runnerboy/camera_capture_screen.dart';
 import 'package:marketingapp/runnerboy/collect_sample.dart';
 import 'package:marketingapp/runnerboy/model/get_center_id_and_available_fund.dart';
 import 'package:marketingapp/runnerboy/model/sample_collected_submitted_model.dart';
+import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/model/start_route_sample_collection.dart';
 import 'package:marketingapp/runnerboy/model/temprature_model.dart';
 import 'package:marketingapp/runnerboy/sample_collection_start_route.dart';
@@ -65,6 +66,8 @@ class SampleCollectionController extends GetxController {
   String? trfFilledAccurately;
 
   List<TempratureOutput>? tempList;
+
+  List<SampleCollectionHistoryOutput>? historyList;
 
   StartRouteSampleCollection? startRouteSampleCollectionModel;
 
@@ -131,6 +134,63 @@ class SampleCollectionController extends GetxController {
         CustomMessage.hideLoader();
       }
     }
+    update();
+  }
+
+  getSampleCollectionHistory(
+      String userId, String fromDate, String toDate) async {
+    // TODO: replace with real API call when backend endpoint is ready
+    historyList = [
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-05-12',
+        dayName: 'Monday',
+        collectedCount: 120,
+        submittedCount: 118,
+        acceptedCount: 115,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-05-13',
+        dayName: 'Tuesday',
+        collectedCount: 60,
+        submittedCount: 55,
+        acceptedCount: 52,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-05-14',
+        dayName: 'Wednesday',
+        collectedCount: 40,
+        submittedCount: 36,
+        acceptedCount: 32,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-05-15',
+        dayName: 'Thursday',
+        collectedCount: 110,
+        submittedCount: 104,
+        acceptedCount: 100,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-05-16',
+        dayName: 'Friday',
+        collectedCount: 56,
+        submittedCount: 55,
+        acceptedCount: 55,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-05-17',
+        dayName: 'Saturday',
+        collectedCount: 34,
+        submittedCount: 32,
+        acceptedCount: 30,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-05-18',
+        dayName: 'Sunday',
+        collectedCount: 45,
+        submittedCount: 44,
+        acceptedCount: 44,
+      ),
+    ];
     update();
   }
 

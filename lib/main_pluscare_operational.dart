@@ -15,18 +15,18 @@ void main() async {
       color: const Color(0xff1573AF),
       location: BannerLocation.bottomStart,
       variables: {
-        // "baseUrl": "http://beta.pluscares.com/webservice/pluscare.asmx",
-        // //dev url
-        // "baseUrl1":
-        //     "http://beta.pluscares.com/webservice/PlusCareMarketingApp.asmx",
-        // //dev url
-        // "baseUrl2": "http://beta.pluscares.com/WEBSERVICE/Handler",
+        "baseUrl": "http://beta.pluscares.com/webservice/pluscare.asmx",
         //dev url
-        "baseUrl": "https://pluscare.org/webservice/PlusCare.asmx",
-        //prod url
-        "baseUrl1": "https://pluscare.org/webservice/PlusCareMarketingApp.asmx",
-        //prod url
-        "baseUrl2": "https://pluscare.org/webservice/Handler",
+        "baseUrl1":
+            "http://beta.pluscares.com/webservice/PlusCareMarketingApp.asmx",
+        //dev url
+        "baseUrl2": "http://beta.pluscares.com/WEBSERVICE/Handler",
+        //dev url
+        // "baseUrl": "https://pluscare.org/webservice/PlusCare.asmx",
+        // //prod url
+        // "baseUrl1": "https://pluscare.org/webservice/PlusCareMarketingApp.asmx",
+        // //prod url
+        // "baseUrl2": "https://pluscare.org/webservice/Handler",
         //prod url
         "aapLogo": "assets/pluscare_logo.png",
         "secondaryColor": "0xffF46E3B",

@@ -63,14 +63,14 @@ class CustomButton extends StatelessWidget {
                         textColor: textColor,
                         textAlign: TextAlign.center),
                      SizedBox(
-                      width: 4.w,
+                      width: 2.w,
                     ),
                     CommonSvg(
                       path: path,
-                      width: 24.w,
-                      height: 24.h,
-                      parentWidth: 26.w,
-                      parentHeight: 26.h,
+                      width: 20.w,
+                      height: 20.h,
+                      parentWidth: 24.w,
+                      parentHeight: 24.h,
                       color: iconColor,
                     ),
                     // Image.asset(
