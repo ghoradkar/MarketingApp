@@ -10,6 +10,7 @@ import 'package:marketingapp/dashboard/my_visit_controller.dart';
 import 'package:marketingapp/runnerboy/collect_sample.dart';
 import 'package:marketingapp/runnerboy/model/sample_collected_submitted_model.dart';
 import 'package:marketingapp/runnerboy/sample_collection_history_screen.dart';
+import 'package:marketingapp/runnerboy/sample_collection_overview_screen.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/sample_collection_district.dart';
 import 'package:marketingapp/utils/color_constants.dart';
@@ -201,6 +202,18 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
                   iconColor: AppColor.white,
                   buttonFontSize: 12.sp),
             ).paddingOnly(right: 6.w),
+          InkWell(
+            onTap: () {
+              Get.to(() => SampleCollectionOverviewScreen(
+                    empCode: userData?['output']?[0]?['EmpCode']?.toString() ?? '',
+                  ));
+            },
+            child: Image.asset(
+              "assets/users-group.png",
+              width: 20.w,
+              height: 20.h,
+            ).paddingOnly(right: 6.w),
+          ),
           InkWell(
             onTap: () {
               Get.to(() => SampleCollectionHistoryScreen(

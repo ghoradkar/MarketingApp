@@ -16,6 +16,7 @@ import 'package:marketingapp/runnerboy/collect_sample.dart';
 import 'package:marketingapp/runnerboy/model/get_center_id_and_available_fund.dart';
 import 'package:marketingapp/runnerboy/model/sample_collected_submitted_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
+import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
 import 'package:marketingapp/runnerboy/model/start_route_sample_collection.dart';
 import 'package:marketingapp/runnerboy/model/temprature_model.dart';
 import 'package:marketingapp/runnerboy/sample_collection_start_route.dart';
@@ -68,6 +69,8 @@ class SampleCollectionController extends GetxController {
   List<TempratureOutput>? tempList;
 
   List<SampleCollectionHistoryOutput>? historyList;
+  List<SampleCollectionOverviewMember>? overviewMembers;
+  List<SampleCollectionHistoryOutput>? overviewDateWiseList;
 
   StartRouteSampleCollection? startRouteSampleCollectionModel;
 
@@ -189,6 +192,103 @@ class SampleCollectionController extends GetxController {
         collectedCount: 45,
         submittedCount: 44,
         acceptedCount: 44,
+      ),
+    ];
+    update();
+  }
+
+  getOverviewData(String userId, String fromDate, String toDate) async {
+    // TODO: replace with real API call when backend endpoint is ready
+    overviewMembers = [
+      SampleCollectionOverviewMember(
+        name: 'Arjun Patil',
+        zone: 'North Zone',
+        empCode: 'EMP001',
+        collectedCount: 20,
+        submittedCount: 18,
+        acceptedCount: 18,
+      ),
+      SampleCollectionOverviewMember(
+        name: 'Ravi Shinde',
+        zone: 'South Zone',
+        empCode: 'EMP002',
+        collectedCount: 34,
+        submittedCount: 34,
+        acceptedCount: 32,
+      ),
+      SampleCollectionOverviewMember(
+        name: 'Suraj Kamble',
+        zone: 'East Zone',
+        empCode: 'EMP003',
+        collectedCount: 22,
+        submittedCount: 18,
+        acceptedCount: 18,
+      ),
+      SampleCollectionOverviewMember(
+        name: 'Vishal More',
+        zone: 'West Zone',
+        empCode: 'EMP004',
+        collectedCount: 27,
+        submittedCount: 25,
+        acceptedCount: 24,
+      ),
+      SampleCollectionOverviewMember(
+        name: 'Pavan Jadhav',
+        zone: 'Central Zone',
+        empCode: 'EMP005',
+        collectedCount: 23,
+        submittedCount: 23,
+        acceptedCount: 23,
+      ),
+    ];
+    update();
+  }
+
+  getOverviewDateWiseData(
+      String empCode, String fromDate, String toDate) async {
+    // TODO: replace with real API call when backend endpoint is ready
+    overviewDateWiseList = [
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-06-01',
+        dayName: 'Monday',
+        collectedCount: 4,
+        submittedCount: 4,
+        acceptedCount: 4,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-06-02',
+        dayName: 'Tuesday',
+        collectedCount: 3,
+        submittedCount: 3,
+        acceptedCount: 3,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-06-03',
+        dayName: 'Wednesday',
+        collectedCount: 2,
+        submittedCount: 2,
+        acceptedCount: 2,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-06-04',
+        dayName: 'Thursday',
+        collectedCount: 5,
+        submittedCount: 4,
+        acceptedCount: 4,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-06-05',
+        dayName: 'Friday',
+        collectedCount: 3,
+        submittedCount: 3,
+        acceptedCount: 3,
+      ),
+      SampleCollectionHistoryOutput(
+        collectionDate: '2026-06-06',
+        dayName: 'Saturday',
+        collectedCount: 3,
+        submittedCount: 2,
+        acceptedCount: 2,
       ),
     ];
     update();
