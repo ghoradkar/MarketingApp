@@ -1,12 +1,17 @@
-  import 'package:flutter/material.dart';
-  import 'package:flutter_flavor/flutter_flavor.dart';
-  import 'package:get/get.dart';
-  import 'package:marketingapp/login/login_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_flavor/flutter_flavor.dart';
+import 'package:get/get.dart';
+import 'package:marketingapp/login/login_controller.dart';
+import 'package:upgrader/upgrader.dart';
 
-  import 'myapp.dart';
+import 'myapp.dart';
+import 'utils/app_upgrader_messages.dart';
 
-  void main() {
-    FlavorConfig(
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Upgrader.clearSavedSettings();
+  Get.put(Upgrader(messages: AppUpgraderMessages()));
+  FlavorConfig(
       name: "Lifenity International",
       color: const Color(0xFF24ABE3),
       location: BannerLocation.bottomStart,
@@ -29,7 +34,6 @@
       },
 
     );
-    Get.put(LoginController());
-    WidgetsFlutterBinding.ensureInitialized();
-    runApp(const MyApp());
-  }
+  Get.put(LoginController());
+  runApp(const MyApp());
+}

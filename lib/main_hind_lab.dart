@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/login/login_controller.dart';
+import 'package:upgrader/upgrader.dart';
 
 import 'myapp.dart';
+import 'utils/app_upgrader_messages.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Upgrader.clearSavedSettings();
+  Get.put(Upgrader(messages: AppUpgraderMessages()));
   FlavorConfig(
       name: "HindLab Operational",
       color: const Color(0xff401F6E),
@@ -33,7 +38,6 @@ void main() {
         "slider4": "assets/banner2.png"
       });
   Get.put(LoginController());
-  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

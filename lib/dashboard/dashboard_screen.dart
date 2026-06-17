@@ -15,6 +15,7 @@ import 'package:marketingapp/widgets/custom_drawer.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/image_indicator.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:upgrader/upgrader.dart';
 
 class DashboardScreen extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -26,6 +27,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final upgrader = Get.find<Upgrader>();
   final LoginController loginController = Get.find<LoginController>();
   final MyVisitControllerController myVisitControllerController = Get.put(
     MyVisitControllerController(),
@@ -143,7 +145,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return UpgradeAlert(
+      upgrader: upgrader,
+      showIgnore: false,
+      showLater: false,
+      showReleaseNotes: false,
+      barrierDismissible: false,
+      shouldPopScope: () => false,
+      child: Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -187,6 +196,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         buildNumber: buildNumber,
       ),
       body: _buildBody(),
+    ),
     );
   }
 

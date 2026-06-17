@@ -12,7 +12,6 @@ import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:upgrader/upgrader.dart';
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -21,18 +20,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final upgrader = Upgrader(
-    debugLogging: true,
-    minAppVersion: '1.3.0',
-    messages: _AppUpgraderMessages(),
-  );
-
+  final upgrader = Get.find<Upgrader>();
   final LoginController loginController = Get.find<LoginController>();
 
   @override
   void initState() {
     super.initState();
-    Upgrader.clearSavedSettings();
     checkInternetAndLoadData();
   }
 
@@ -72,12 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 init: loginController,
                 builder: (controller) {
                   return UpgradeAlert(
-                    shouldPopScope: () => false,
-                    barrierDismissible: false,
+                    upgrader: upgrader,
                     showIgnore: false,
                     showLater: false,
-                    dialogStyle: UpgradeDialogStyle.material,
-                    upgrader: upgrader,
+                    showReleaseNotes: false,
+                    barrierDismissible: false,
+                    shouldPopScope: () => false,
                     child: Container(
                       width: double.infinity,
                       height: double.infinity,
@@ -368,24 +361,3 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class _AppUpgraderMessages extends UpgraderMessages {
-  @override
-  String? message(UpgraderMessage messageKey) {
-    switch (messageKey) {
-      case UpgraderMessage.title:
-        return 'Update Available';
-      case UpgraderMessage.body:
-        return 'A new version of ${FlavorConfig.instance.name} is available!';
-      case UpgraderMessage.prompt:
-        return 'Would you like to update?';
-      case UpgraderMessage.buttonTitleUpdate:
-        return 'Update Now';
-      case UpgraderMessage.buttonTitleLater:
-        return 'Later';
-      case UpgraderMessage.buttonTitleIgnore:
-        return 'Ignore';
-      default:
-        return super.message(messageKey);
-    }
-  }
-}
