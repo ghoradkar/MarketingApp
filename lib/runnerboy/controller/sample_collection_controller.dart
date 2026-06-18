@@ -38,7 +38,7 @@ class SampleCollectionController extends GetxController {
   List<SampleCollectedSubmitedOutput>? submittedList;
 
   bool hasInternet = true;
-  bool isListLoading = false;
+  bool isListLoading = true;
   bool isSubmitting = false;
 
   // bool shouldValidate = false;
