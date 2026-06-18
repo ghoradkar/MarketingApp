@@ -61,9 +61,6 @@ class AddClientController extends GetxController {
   TextEditingController newCustomerype = TextEditingController();
 
   getDistrictList(String? stateCode) async {
-    // isLoading = true;
-    // update();
-    CustomMessage.showLoader();
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.districtList}?STATELGDCODE=$stateCode");
 
@@ -74,19 +71,12 @@ class AddClientController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      // isLoading = false;
-      CustomMessage.hideLoader();
-
-      //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         districtRespModel = DistrictListModel.fromJson(data);
-
         status = data['message'];
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
@@ -195,8 +185,6 @@ class AddClientController extends GetxController {
   }
 
   getClientTypeList() async {
-    CustomMessage.showLoader();
-
     final uri =
         Uri.parse("${ApiConstants.baseUrl}${ApiConstants.getCustomerTypeList}");
 
@@ -207,10 +195,6 @@ class AddClientController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      // isLoading = false;
-      CustomMessage.hideLoader();
-
-      //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         ClientTypeModel clientTypeModel = ClientTypeModel.fromJson(data);
@@ -218,8 +202,6 @@ class AddClientController extends GetxController {
         status = data['message'];
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();

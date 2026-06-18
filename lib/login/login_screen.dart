@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/login/login_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
@@ -11,7 +12,9 @@ import 'package:marketingapp/widgets/common_svg.dart';
 import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:upgrader/upgrader.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -23,10 +26,18 @@ class _LoginScreenState extends State<LoginScreen> {
   final upgrader = Get.find<Upgrader>();
   final LoginController loginController = Get.find<LoginController>();
 
+  String? version;
+
   @override
   void initState() {
     super.initState();
     checkInternetAndLoadData();
+    _loadVersion();
+  }
+
+  _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() => version = info.version);
   }
 
   checkInternetAndLoadData() async {
@@ -71,7 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     showReleaseNotes: false,
                     barrierDismissible: false,
                     shouldPopScope: () => false,
-                    child: Container(
+                    child: Stack(
+                      children: [
+                      Container(
                       width: double.infinity,
                       height: double.infinity,
                       decoration: BoxDecoration(
@@ -123,42 +136,47 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ],
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
+                                          padding: EdgeInsets.only(
+                                              top: 10.h,
+                                              bottom: 10.h,
+                                              left: 10.w,
+                                              right: 10.w),
                                           child: Column(
                                             children: [
                                               FlavorConfig.instance.name ==
                                                       "CSC HealthCare"
                                                   ? Image.asset(
                                                       "assets/csc_text_logo.png",
-                                                      width: 300,
+                                                      width: 300.w,
                                                     )
                                                   : Image.asset(
                                                       FlavorConfig.instance
                                                           .variables['aapLogo'],
-                                                      height: 160,
+                                                      height: 160.h,
                                                     ),
-                                              const SizedBox(
-                                                height: 16,
-                                              ),
+                                              // const SizedBox(
+                                              //   height: 10,
+                                              // ),
                                               CustomText(
                                                 text: 'Sign In',
-                                                fontSize: 26,
+                                                fontSize: 26.sp,
                                                 fontWeight: FontWeight.bold,
                                                 textColor: AppColor.black,
                                                 textAlign: TextAlign.center,
                                                 fontFam: 'Nunito Sans',
-                                              ).paddingOnly(bottom: 2, top: 2),
+                                              ).paddingOnly(
+                                                  bottom: 4.h, top: 2.h),
                                               CustomText(
                                                 text:
                                                     'Welcome! Enter Registered Mobile Number & Password To Continue.',
-                                                fontSize: 16,
+                                                fontSize: 16.sp,
                                                 fontWeight: FontWeight.normal,
                                                 textColor: AppColor.black,
                                                 textAlign: TextAlign.center,
                                                 fontFam: 'Nunito Sans',
                                               ),
-                                              const SizedBox(
-                                                height: 16,
+                                              SizedBox(
+                                                height: 16.h,
                                               ),
                                               CustomTextField(
                                                   autofocus: false,
@@ -173,13 +191,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   isReadOnly: false,
                                                   maxLines: 1,
                                                   mazLenght: 10,
-                                                  fontSize: 16,
+                                                  fontSize: 16.sp,
                                                   prefixIcon: CommonSvg(
                                                     path: 'assets/username.svg',
-                                                    width: 26,
-                                                    height: 26,
-                                                    parentWidth: 30,
-                                                    parentHeight: 30,
+                                                    width: 26.w,
+                                                    height: 26.h,
+                                                    parentWidth: 30.w,
+                                                    parentHeight: 30.h,
                                                     color: AppColor
                                                         .primaryBackgroundColor,
                                                   )),
@@ -197,13 +215,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 fillColor: AppColor.white,
                                                 isReadOnly: false,
                                                 maxLines: 1,
-                                                fontSize: 16,
+                                                fontSize: 16.sp,
                                                 prefixIcon: CommonSvg(
                                                   path: 'assets/password.svg',
-                                                  width: 26,
-                                                  height: 26,
-                                                  parentWidth: 30,
-                                                  parentHeight: 30,
+                                                  width: 26.w,
+                                                  height: 26.h,
+                                                  parentWidth: 30.w,
+                                                  parentHeight: 30.h,
                                                   color: AppColor
                                                       .primaryBackgroundColor,
                                                 ),
@@ -243,12 +261,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                                                   .keepMeSignedIn);
                                                     },
                                                   ),
-                                                  const SizedBox(
-                                                    height: 16,
+                                                  SizedBox(
+                                                    height: 16.h,
                                                   ),
                                                   CustomText(
                                                     text: 'Keep me sign in',
-                                                    fontSize: 16,
+                                                    fontSize: 16.sp,
                                                     fontWeight:
                                                         FontWeight.normal,
                                                     textColor: AppColor.black,
@@ -257,15 +275,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   ),
                                                 ],
                                               ),
-                                              const SizedBox(
-                                                height: 16,
+                                              SizedBox(
+                                                height: 16.h,
                                               ),
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        8, 12, 8, 20),
+                                                padding: EdgeInsets.fromLTRB(
+                                                    8.w, 12.h, 8.w, 20.h),
                                                 child: CustomButton(
-                                                  buttonFontSize: 16,
+                                                  buttonFontSize: 16.sp,
                                                   buttonText: 'Sign In',
                                                   path: 'assets/arrow_nav.svg',
                                                   callB: () async {
@@ -312,31 +329,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 ),
                                               ),
 
-                                              // Padding(
-                                              //   padding:
-                                              //       const EdgeInsets.fromLTRB(
-                                              //           8, 12, 8, 20),
-                                              //   child: CustomButton(
-                                              //     buttonFontSize: 16,
-                                              //     buttonText: 'Sign In',
-                                              //     path: 'assets/arrow_nav.svg',
-                                              //     callB: () async {
-                                              //       await controller.login(
-                                              //           controller
-                                              //               .userName.value.text,
-                                              //           controller
-                                              //               .password.value.text);
-                                              //     },
-                                              //     // buttonWidth: double.infinity,
-                                              //     primColor: AppColor
-                                              //         .primaryBackgroundColor,
-                                              //     secColor:
-                                              //         AppColor.secondaryColor,
-                                              //     textColor: AppColor.white,
-                                              //     iconColor: AppColor.white,
-                                              //     buttonWidth: double.infinity,
-                                              //   ),
-                                              // ),
+                                              CustomText(
+                                                text: version != null ? "Version : $version" : '',
+                                                fontSize: 16,
+                                                fontFam: 'Nunito Sans',
+                                                fontWeight: FontWeight.normal,
+                                                textColor: AppColor.black,
+                                                textAlign: TextAlign.center,
+                                              ).paddingOnly(top: 8)
                                             ],
                                           ),
                                         ),
@@ -350,6 +350,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                     ),
+
+                    ],
+                    ),
                   );
                 })
         // : InternetIssue(
@@ -360,4 +363,3 @@ class _LoginScreenState extends State<LoginScreen> {
         );
   }
 }
-

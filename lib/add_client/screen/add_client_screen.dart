@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/add_client/add_client_controller.dart';
+import 'package:marketingapp/add_client/controller/add_client_controller.dart';
 import 'package:marketingapp/add_client/model/area_model.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';
@@ -38,7 +38,7 @@ class _AddClientScreenState extends State<AddClientScreen>
   Map<String, dynamic>? userData;
   Timer? _debounceTimer;
 
-  // bool isLoading = true;
+  bool isLoading = true;
   bool hasError = false;
 
   @override
@@ -51,29 +51,23 @@ class _AddClientScreenState extends State<AddClientScreen>
 
   Future<void> _initializeScreen() async {
     setState(() {
-      // isLoading = true;
+      isLoading = true;
       hasError = false;
     });
 
     try {
-      // Always load user data from SharedPreferences first (works offline)
       await getUserData();
-
-      // Try to get location (might work offline with last known location)
-
-      // Check internet and load fresh data
       await checkInternetAndLoadData();
     } catch (e) {
       debugPrint("Screen initialization error: $e");
       setState(() {
         hasError = true;
       });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
-    // finally {
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    // }
   }
 
   Future<void> getUserData() async {
@@ -198,11 +192,11 @@ class _AddClientScreenState extends State<AddClientScreen>
   }
 
   Widget _buildBody() {
-    // if (isLoading) {
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
     if (hasError) {
       return _buildErrorWidget();

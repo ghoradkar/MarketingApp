@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/change_password/change_pass_controller.dart';
+import 'package:marketingapp/change_password/controller/change_pass_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/widgets/common_svg.dart';
 import 'package:marketingapp/widgets/custom_button.dart';

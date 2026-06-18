@@ -33,46 +33,46 @@ class TodaysVisitController extends GetxController {
   String? status;
 
   bool hasInternet = true;
+  bool isTableLoading = true;
+  bool isDetTableLoading = true;
 
   getTodaysVisitList(
       String distlgdCode, String visitDate, String userID) async {
-    CustomMessage.showLoader();
-
-    final uri = Uri.parse(
-        "${ApiConstants.baseUrl}${ApiConstants.todaysVisitListManager}?DISTLGDCODE=$distlgdCode&VisitDate=$visitDate&UserID=$userID");
-
-    debugPrint(uri.path);
-
-    final response = await ioClient.get(uri);
-    debugPrint(response.statusCode.toString());
-    debugPrint("response.body : ${response.body}");
-
-    if (response.statusCode == 200) {
-      // isLoading = false;
-      CustomMessage.hideLoader();
-
-      //getDeviceDetails
-      final data = json.decode(response.body);
-      if (data['status'] == 'Success') {
-        TodaysVisitModel todaysVisitModel = TodaysVisitModel.fromJson(data);
-        todaysVisitList = todaysVisitModel.output;
-        status = data['message'];
-        CustomMessage.toast(status);
-      } else {
-        todaysVisitList = null;
-        status = data['message'];
-        // isLoading = false;
-        CustomMessage.toast(status);
-
-        CustomMessage.hideLoader();
-      }
-    }
+    isTableLoading = true;
     update();
+
+    try {
+      final uri = Uri.parse(
+          "${ApiConstants.baseUrl}${ApiConstants.todaysVisitListManager}?DISTLGDCODE=$distlgdCode&VisitDate=$visitDate&UserID=$userID");
+
+      debugPrint(uri.path);
+
+      final response = await ioClient.get(uri);
+      debugPrint(response.statusCode.toString());
+      debugPrint("response.body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'Success') {
+          TodaysVisitModel todaysVisitModel = TodaysVisitModel.fromJson(data);
+          todaysVisitList = todaysVisitModel.output;
+          status = data['message'];
+          CustomMessage.toast(status);
+        } else {
+          todaysVisitList = null;
+          status = data['message'];
+          CustomMessage.toast(status);
+        }
+      }
+    } catch (e) {
+      debugPrint("Error fetching visit list: $e");
+    } finally {
+      isTableLoading = false;
+      update();
+    }
   }
 
   getTodaysVisitRouteTime(String visitDate, String userID) async {
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.todaysVisitRouteTime}?VisitDate=$visitDate&UserID=$userID");
 
@@ -83,27 +83,21 @@ class TodaysVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         TodaysVisitRouteTime todaysVisitModel =
             TodaysVisitRouteTime.fromJson(data);
         todaysVisitRoute = todaysVisitModel.output;
         status = data['message'];
-        update();
       } else {
         todaysVisitRoute = null;
         status = data['message'];
-        CustomMessage.hideLoader();
       }
     }
     update();
   }
 
   getTodaysVisitDetList(String visitDate, String userID) async {
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.todaysVisitDetailsList}?VisitDate=$visitDate&UserID=$userID");
 
@@ -114,8 +108,6 @@ class TodaysVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         TodaysVisitDetailModel todaysVisitModel =
@@ -125,8 +117,6 @@ class TodaysVisitController extends GetxController {
       } else {
         todaysVisitDetList = null;
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();

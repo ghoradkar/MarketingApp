@@ -4,10 +4,10 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/todays_visit/model/customer_visit_details.dart';
 import 'package:marketingapp/todays_visit/model/todays_visit_model.dart';
-import 'package:marketingapp/todays_visit/todays_visit_controller.dart';
+import 'package:marketingapp/todays_visit/controller/todays_visit_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';
@@ -17,6 +17,7 @@ import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:marketingapp/widgets/customer_table.dart';
 import 'package:marketingapp/widgets/date_picker.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class TodaysVisitDetails extends StatefulWidget {
   final TodaysVisitOutput? todaysVisitItem;
@@ -114,6 +115,8 @@ class _TodaysVisitDetailsState extends State<TodaysVisitDetails> {
   }
 
   Future<void> fetchVisitData() async {
+    todaysVisitController.isDetTableLoading = true;
+    todaysVisitController.update();
     try {
       if (userData?['output']?[0]?['Designation'] == "Manager" ||
           userData?['output']?[0]?['Designation'] == "Lab Sales Manager") {
@@ -133,7 +136,9 @@ class _TodaysVisitDetailsState extends State<TodaysVisitDetails> {
       }
     } catch (e) {
       debugPrint("Error fetching visit data: $e");
-      // Don't block UI if this fails
+    } finally {
+      todaysVisitController.isDetTableLoading = false;
+      todaysVisitController.update();
     }
   }
 
@@ -203,29 +208,24 @@ class _TodaysVisitDetailsState extends State<TodaysVisitDetails> {
   }
 
   Widget _buildBody() {
-    // if (isLoading) {
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
-
     if (hasError) {
       return _buildErrorWidget();
-    }
-
-    if (userData == null) {
-      return _buildNoDataWidget();
     }
 
     return GetBuilder<TodaysVisitController>(
         init: todaysVisitController,
         builder: (controller) {
+          if (controller.isDetTableLoading) {
+            return _buildSkeletonContent();
+          }
+
+          if (userData == null) {
+            return _buildNoDataWidget();
+          }
+
           return Column(
             children: [
-              // Show offline banner if no internet (non-blocking)
               if (!controller.hasInternet) _buildOfflineBanner(),
-
-              // Main content
               Container(
                 padding: const EdgeInsets.all(6),
                 alignment: Alignment.center,
@@ -265,11 +265,9 @@ class _TodaysVisitDetailsState extends State<TodaysVisitDetails> {
                   ],
                 ),
               ).paddingSymmetric(horizontal: 10, vertical: 10),
-
               Expanded(
                   child: CustomerTable(
                 isOffline: controller.hasInternet,
-                // NEW: Pass offline status
                 onCLick: (index) async {
                   final List<ConnectivityResult> connectivityResult =
                       await Connectivity().checkConnectivity();
@@ -327,6 +325,104 @@ class _TodaysVisitDetailsState extends State<TodaysVisitDetails> {
             ],
           );
         });
+  }
+
+  Widget _buildSkeletonContent() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: Column(
+        children: [
+          // Skeleton for "Route Started On" banner
+          Container(
+            height: 40,
+            margin:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          // Skeleton table
+          Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Table(
+              columnWidths: const {
+                0: FlexColumnWidth(1),
+                1: FlexColumnWidth(3),
+                2: FlexColumnWidth(1),
+                3: FlexColumnWidth(1),
+                4: FlexColumnWidth(1),
+              },
+              children: [
+                _skeletonHeaderRow(),
+                for (int i = 0; i < 8; i++) _skeletonDataRow(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  TableRow _skeletonHeaderRow() {
+    return TableRow(
+      children: List.generate(5, (index) {
+        return TableCell(
+          child: Container(
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppColor.primaryBackgroundColor.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.only(
+                topLeft:
+                    index == 0 ? const Radius.circular(10) : Radius.zero,
+                topRight:
+                    index == 4 ? const Radius.circular(10) : Radius.zero,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Container(
+              width: 36,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  TableRow _skeletonDataRow() {
+    return TableRow(
+      children: List.generate(5, (index) {
+        return TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Container(
+            height: 70,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              border: Border.symmetric(
+                horizontal: BorderSide(color: Color(0xFFE0E0E0)),
+                vertical: BorderSide(color: Color(0xFFE0E0E0)),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Container(
+              width: double.infinity,
+              height: 14,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
   }
 
   Widget _buildOfflineBanner() {
@@ -467,22 +563,29 @@ class _TodaysVisitDetailsState extends State<TodaysVisitDetails> {
       todaysVisitController.dateController1.text =
           todaysVisitController.formattedFromDate1!;
 
-      if (userData?['output']?[0]?['Designation'] == "Manager" ||
-          userData?['output']?[0]?['Designation'] == "Lab Sales Manager") {
-        await todaysVisitController.getTodaysVisitRouteTime(
-            todaysVisitController.formattedFromDate1!,
-            widget.todaysVisitItem!.resourceUserID.toString());
+      todaysVisitController.isDetTableLoading = true;
+      todaysVisitController.update();
+      try {
+        if (userData?['output']?[0]?['Designation'] == "Manager" ||
+            userData?['output']?[0]?['Designation'] == "Lab Sales Manager") {
+          await todaysVisitController.getTodaysVisitRouteTime(
+              todaysVisitController.formattedFromDate1!,
+              widget.todaysVisitItem!.resourceUserID.toString());
 
-        await todaysVisitController.getTodaysVisitDetList(
-            todaysVisitController.formattedFromDate1!,
-            widget.todaysVisitItem!.resourceUserID.toString());
-      } else {
-        await todaysVisitController.getTodaysVisitRouteTime(
-            todaysVisitController.formattedFromDate1!,
-            userData!['output'][0]['EmpCode'].toString());
-        await todaysVisitController.getTodaysVisitDetList(
-            todaysVisitController.formattedFromDate1!,
-            userData!['output'][0]['EmpCode'].toString());
+          await todaysVisitController.getTodaysVisitDetList(
+              todaysVisitController.formattedFromDate1!,
+              widget.todaysVisitItem!.resourceUserID.toString());
+        } else {
+          await todaysVisitController.getTodaysVisitRouteTime(
+              todaysVisitController.formattedFromDate1!,
+              userData!['output'][0]['EmpCode'].toString());
+          await todaysVisitController.getTodaysVisitDetList(
+              todaysVisitController.formattedFromDate1!,
+              userData!['output'][0]['EmpCode'].toString());
+        }
+      } finally {
+        todaysVisitController.isDetTableLoading = false;
+        todaysVisitController.update();
       }
     }
     setState(() {});

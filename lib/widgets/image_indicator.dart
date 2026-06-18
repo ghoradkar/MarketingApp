@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:marketingapp/dashboard/dashboard_screen.dart';
+import 'package:marketingapp/dashboard/screen/dashboard_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 
 class ImageCarouselWithIndicator extends StatefulWidget {

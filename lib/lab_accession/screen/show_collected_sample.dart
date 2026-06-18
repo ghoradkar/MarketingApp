@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/add_visit/model/marketing_person_model.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/lab_accession/model/sample_pending_from_accession.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/model/get_center_id_and_available_fund.dart';

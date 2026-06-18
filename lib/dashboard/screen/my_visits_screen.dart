@@ -2,12 +2,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/add_client/add_client_screen.dart';
-import 'package:marketingapp/add_visit/add_visit_start_route_screen.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
-import 'package:marketingapp/todays_visit/todays_visit_controller.dart';
-import 'package:marketingapp/todays_visit/todays_visit_details.dart';
-import 'package:marketingapp/todays_visit/todays_visit_screen.dart';
+import 'package:marketingapp/add_client/screen/add_client_screen.dart';
+import 'package:marketingapp/add_visit/screen/add_visit_start_route_screen.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
+import 'package:marketingapp/todays_visit/controller/todays_visit_controller.dart';
+import 'package:marketingapp/todays_visit/screen/todays_visit_details.dart';
+import 'package:marketingapp/todays_visit/screen/todays_visit_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';
@@ -15,8 +15,9 @@ import 'package:marketingapp/widgets/common_svg.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/dash_card.dart';
 import 'package:marketingapp/widgets/dropdown_search.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
-import 'model/district_list_model.dart';
+import '../model/district_list_model.dart';
 
 class MyVisitsScreen extends StatefulWidget {
   static const routeName = '/my-visits';
@@ -152,6 +153,8 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
   }
 
   Future<void> fetchDashboardData() async {
+    myVisitControllerController.isVisitLoading = true;
+    myVisitControllerController.update();
     try {
       if (userData?['output']?[0]?['Designation'] == "Manager" ||
           userData?['output']?[0]?['Designation'] == "Lab Sales Manager") {
@@ -173,7 +176,9 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
       myVisitControllerController.update();
     } catch (e) {
       debugPrint("Error fetching dashboard data: $e");
-      // Don't block UI if this fails
+    } finally {
+      myVisitControllerController.isVisitLoading = false;
+      myVisitControllerController.update();
     }
   }
 
@@ -186,6 +191,10 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
 
     if (hasError) {
       return _buildErrorWidget();
+    }
+
+    if (controller.isVisitLoading) {
+      return _buildSkeletonContent();
     }
 
     if (userData == null) {
@@ -233,35 +242,42 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
                       }
 
                       selectedDist = value;
-                      if (selectedDist == "All") {
-                        await myVisitControllerController.getDashCount(
-                            "0",
-                            userData!['output'][0]['EmpCode'].toString(),
-                            FlavorConfig.instance.name!);
+                      myVisitControllerController.isVisitLoading = true;
+                      myVisitControllerController.update();
+                      try {
+                        if (selectedDist == "All") {
+                          await myVisitControllerController.getDashCount(
+                              "0",
+                              userData!['output'][0]['EmpCode'].toString(),
+                              FlavorConfig.instance.name!);
 
-                        await myVisitControllerController.getMonthlyTarget(
-                            "0", userData!['output'][0]['EmpCode'].toString());
-                      } else {
-                        selectedDistObj = controller.districtRespModel?.output
-                            ?.firstWhere((e) => e.distname == value);
+                          await myVisitControllerController.getMonthlyTarget(
+                              "0",
+                              userData!['output'][0]['EmpCode'].toString());
+                        } else {
+                          selectedDistObj = controller.districtRespModel?.output
+                              ?.firstWhere((e) => e.distname == value);
 
-                        await myVisitControllerController.getDashCount(
-                            selectedDistObj!.distlgdcode.toString(),
-                            userData!['output'][0]['EmpCode'].toString(),
-                            FlavorConfig.instance.name!);
+                          await myVisitControllerController.getDashCount(
+                              selectedDistObj!.distlgdcode.toString(),
+                              userData!['output'][0]['EmpCode'].toString(),
+                              FlavorConfig.instance.name!);
 
-                        await myVisitControllerController.getMonthlyTarget(
-                            selectedDistObj!.distlgdcode.toString(),
-                            userData!['output'][0]['EmpCode'].toString());
+                          await myVisitControllerController.getMonthlyTarget(
+                              selectedDistObj!.distlgdcode.toString(),
+                              userData!['output'][0]['EmpCode'].toString());
+                        }
+                      } finally {
+                        myVisitControllerController.isVisitLoading = false;
+                        myVisitControllerController.update();
                       }
-                      controller.update();
                     },
                     filledColor: AppColor.white,
                     prefixIcon: Icon(
                       Icons.location_on_outlined,
                       color: AppColor.secondaryColor,
                     ),
-                  ),
+                  ).paddingOnly(left: 10,right: 10),
                 ),
                 Card(
                   child: Padding(
@@ -663,6 +679,183 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
           ),
         )
       ],
+    );
+  }
+
+  Widget _buildSkeletonContent() {
+    final cardColors = [
+      const Color(0x80D5B3FF),
+      const Color(0x80FFB3BA),
+      const Color(0x80FFDFBA),
+      const Color(0x80FFFFBA),
+      const Color(0x80BAFFC9),
+      const Color(0x80BAE1FF),
+    ];
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Dropdown skeleton
+                Shimmer(
+                  colorOpacity: 0.6,
+                  duration: const Duration(seconds: 2),
+                  direction: const ShimmerDirection.fromLeftToRight(),
+                  child: Container(
+                    height: 56,
+                    margin: const EdgeInsets.only(top: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                  ).paddingOnly(left: 10,right: 10),
+                ),
+                // Monthly target card skeleton
+                Shimmer(
+                  colorOpacity: 0.6,
+                  duration: const Duration(seconds: 2),
+                  direction: const ShimmerDirection.fromLeftToRight(),
+                  child: Container(
+                    height: 72,
+                    margin: const EdgeInsets.only(
+                        top: 10, left: 8, right: 8, bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                // Stat cards skeleton (3 rows of 2)
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: 3,
+                  itemBuilder: (_, row) => Row(
+                    children: [
+                      Expanded(
+                        child: _buildSkeletonStatCard(cardColors[row * 2])
+                            .paddingSymmetric(vertical: 8, horizontal: 10),
+                      ),
+                      Expanded(
+                        child: _buildSkeletonStatCard(cardColors[row * 2 + 1])
+                            .paddingSymmetric(vertical: 8, horizontal: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ).paddingSymmetric(horizontal: 10),
+          ),
+        ),
+        // Bottom bar skeleton
+        SafeArea(
+          bottom: true,
+          top: false,
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColor.primaryBackgroundColor.withValues(alpha: 0.8),
+                  AppColor.secondaryColor.withValues(alpha: 0.8),
+                ],
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Shimmer(
+                  colorOpacity: 0.3,
+                  duration: const Duration(seconds: 2),
+                  direction: const ShimmerDirection.fromLeftToRight(),
+                  child: Container(
+                    width: 120,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ),
+                Container(height: 40, width: 1.5, color: AppColor.white),
+                Shimmer(
+                  colorOpacity: 0.3,
+                  duration: const Duration(seconds: 2),
+                  direction: const ShimmerDirection.fromLeftToRight(),
+                  child: Container(
+                    width: 120,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSkeletonStatCard(Color cardColor) {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: Container(
+        height: 100,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: cardColor,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              margin: const EdgeInsets.only(right: 20, left: 10),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 20,
+                    margin: const EdgeInsets.only(bottom: 10, left: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  Container(
+                    width: 60,
+                    height: 14,
+                    margin: const EdgeInsets.only(left: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

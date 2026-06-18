@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
-import 'package:marketingapp/runnerboy/sample_collection_overview_date_details_screen.dart';
+import 'package:marketingapp/runnerboy/screen/sample_collection_overview_date_details_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/data_not_found.dart';
 import 'package:marketingapp/widgets/custom_text.dart';

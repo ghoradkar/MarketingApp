@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/forgot_pasword/forgot_password_controller.dart';
+import 'package:marketingapp/forgot_pasword/controller/forgot_password_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_text.dart';

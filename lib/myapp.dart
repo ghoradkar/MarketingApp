@@ -3,13 +3,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/dashboard/dashboard_screen.dart';
-import 'package:marketingapp/dashboard/my_visits_screen.dart';
+import 'package:marketingapp/dashboard/screen/dashboard_screen.dart';
+import 'package:marketingapp/dashboard/screen/my_visits_screen.dart';
 import 'package:marketingapp/login/login_controller.dart';
 import 'package:marketingapp/splash/splash_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
-import 'add_visit/add_visit_punch_out_screen.dart';
-import 'add_visit/add_visit_start_route_screen.dart';
+import 'add_visit/screen/add_visit_punch_out_screen.dart';
+import 'add_visit/screen/add_visit_start_route_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

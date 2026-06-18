@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/change_password/change_password.dart';
+import 'package:marketingapp/change_password/screen/change_password.dart';
 import 'package:marketingapp/login/logout_screen.dart';
 import 'package:marketingapp/profile/profile_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
@@ -280,7 +280,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 //                   child: Row(
 //                     children: [
 //                       CommonSvg(
-//                         path: 'assets/dash.svg',
+//                         path: 'assets/screen.svg',
 //                         width: 26,
 //                         height: 26,
 //                         parentWidth: 30,
@@ -288,7 +288,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 //                         color: AppColor.primaryBackgroundColor,
 //                       ),
 //                       // Image.asset(
-//                       //   'assets/dash.png',
+//                       //   'assets/screen.png',
 //                       //   color: AppColor.primaryBackgroundColor,
 //                       // ),
 //                       CustomText(

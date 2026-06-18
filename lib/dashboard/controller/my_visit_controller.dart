@@ -19,6 +19,7 @@ class MyVisitControllerController extends GetxController {
   DashCountModel? dashCountModel;
   DashCountModel? monthlyBTarget;
   bool hasInternet = true;
+  bool isVisitLoading = true;
 
   String? locationMessage;
 
@@ -62,7 +63,6 @@ class MyVisitControllerController extends GetxController {
   // }
 
   Future<void> getDistrictList(String? stateCode) async {
-    CustomMessage.showLoader();
     try {
       final uri = Uri.parse(
           "${ApiConstants.baseUrl}${ApiConstants.districtList}?STATELGDCODE=$stateCode");
@@ -71,7 +71,7 @@ class MyVisitControllerController extends GetxController {
 
       final response = await ioClient
           .get(uri)
-          .timeout(const Duration(seconds: 10)); // 10-second timeout
+          .timeout(const Duration(seconds: 10));
 
       debugPrint(response.statusCode.toString());
       debugPrint("response.body : ${response.body}");
@@ -96,7 +96,6 @@ class MyVisitControllerController extends GetxController {
           "Unable to fetch district list. Please try again later.");
       debugPrint("getDistrictList error: $e");
     } finally {
-      CustomMessage.hideLoader();
       update();
     }
   }
@@ -132,7 +131,6 @@ class MyVisitControllerController extends GetxController {
 
   Future<void> getDashCount(
       String distCode, String userId, String flavour) async {
-    CustomMessage.showLoader();
     try {
       final uri = Uri.parse(
           "${ApiConstants.baseUrl1}${ApiConstants.dashCount}?DISTLGDCODE=$distCode&USERID=$userId");
@@ -166,13 +164,11 @@ class MyVisitControllerController extends GetxController {
       CustomMessage.toast("Unable to fetch data. Please try again later.");
       debugPrint("getDashCount error: $e");
     } finally {
-      CustomMessage.hideLoader();
       update();
     }
   }
 
   Future<void> getMonthlyTarget(String distCode, String userId) async {
-    CustomMessage.showLoader();
     try {
       final uri = Uri.parse(
           "${ApiConstants.baseUrl1}${ApiConstants.monthlyBusinessTarget}?DISTLGDCODE=$distCode&USERID=$userId");
@@ -207,7 +203,6 @@ class MyVisitControllerController extends GetxController {
       CustomMessage.toast("Unable to fetch data. Please try again later.");
       debugPrint("getMonthlyTarget error: $e");
     } finally {
-      CustomMessage.hideLoader();
       update();
     }
   }

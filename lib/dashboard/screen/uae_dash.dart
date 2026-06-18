@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/dashboard/my_visits_screen.dart';
+import 'package:marketingapp/dashboard/screen/my_visits_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marquee/marquee.dart';

@@ -4,11 +4,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/add_visit/add_visit_controller.dart';
+import 'package:marketingapp/add_visit/controller/add_visit_controller.dart';
 import 'package:marketingapp/add_visit/model/customer_list_model.dart';
 import 'package:marketingapp/add_visit/model/marketing_person_model.dart';
 import 'package:marketingapp/add_visit/model/services_model.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';
@@ -46,7 +46,7 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
   String? selectedServicesVal;
   Timer? _debounceTimer;
 
-  // bool isLoading = true;
+  bool isLoading = true;
   bool hasError = false;
 
   @override
@@ -70,27 +70,23 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
 
   Future<void> _initializeScreen() async {
     setState(() {
-      // isLoading = true;
+      isLoading = true;
       hasError = false;
     });
 
     try {
-      // Always load user data from SharedPreferences first (works offline)
       await getUserData();
-
-      // Check internet and load fresh data
       await checkInternetAndLoadData();
     } catch (e) {
       debugPrint("Screen initialization error: $e");
       setState(() {
         hasError = true;
       });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
-    // finally {
-    // setState(() {
-    //   isLoading = false;
-    // });
-    // }
   }
 
   Future<void> getUserData() async {
@@ -305,11 +301,11 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
   }
 
   Widget _buildBody(AddVisitController controller) {
-    // if (isLoading) {
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
     if (hasError) {
       return _buildErrorWidget();

@@ -4,8 +4,8 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:marketingapp/todays_visit/model/todays_visit_model.dart';
-import 'package:marketingapp/todays_visit/todays_visit_controller.dart';
-import 'package:marketingapp/todays_visit/todays_visit_details.dart';
+import 'package:marketingapp/todays_visit/controller/todays_visit_controller.dart';
+import 'package:marketingapp/todays_visit/screen/todays_visit_details.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';
@@ -14,6 +14,7 @@ import 'package:marketingapp/widgets/cust_table.dart';
 import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/date_picker.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class TodaysVisitScreen extends StatefulWidget {
   final String? selectedDistrictId;
@@ -179,105 +180,184 @@ class _TodaysVisitScreenState extends State<TodaysVisitScreen> {
   }
 
   Widget _buildBody() {
-    // if (isLoading) {
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
-
     if (hasError) {
       return _buildErrorWidget();
-    }
-
-    if (userData == null) {
-      return _buildNoDataWidget();
     }
 
     return GetBuilder<TodaysVisitController>(
         init: todaysVisitController,
         builder: (controller) {
+          if (controller.isTableLoading) {
+            return _buildSkeletonTable();
+          }
+
+          if (userData == null) {
+            return _buildNoDataWidget();
+          }
+
           return Column(
             children: [
-              // Show offline banner if no internet (non-blocking)
               if (!controller.hasInternet) _buildOfflineBanner(),
-
-              // Main content
               controller.todaysVisitList != null
                   ? Expanded(
-                child: CustTable(
-                  isClickable: true,
-                  onCLick: (index) {
-                    Get.to(TodaysVisitDetails(
-                      todaysVisitItem: controller.todaysVisitList?[index],
-                    ));
-                  },
-                  l1: List.generate(
-                      controller.todaysVisitList?.length ?? 0,
-                          (index) => (index + 1).toString()),
-                  l2: controller.todaysVisitList
-                      ?.map((e) => e.resourceName)
-                      .toList() ??
-                      [],
-                  l3: controller.todaysVisitList
-                      ?.map((e) => e.noOfVisit)
-                      .toList() ??
-                      [],
-                  l4: controller.todaysVisitList
-                      ?.map((e) => e.newCustomer)
-                      .toList() ??
-                      [],
-                  tableHeader: const [
-                    "Sr.\nNo",
-                    "Resource\nName",
-                    "No. of\nVisits",
-                    "New\nCustomers"
-                  ],
-                ).paddingOnly(left: 8, right: 8, top: 10),
-              )
-                  : Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/nodata.png'),
-                      const SizedBox(height: 20),
-                      CustomText(
-                          text: "Data Not Found",
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          textColor: AppColor.black,
-                          textAlign: TextAlign.center,
-                          fontFam: "Nunito Sans"),
-                      const SizedBox(height: 20),
-                      CustomText(
-                          text: "Maybe go back and try different keyword?",
-                          fontSize: 18,
-                          fontWeight: FontWeight.normal,
-                          textColor: AppColor.borderGrey,
-                          textAlign: TextAlign.center,
-                          fontFam: "Nunito Sans"),
-                      const SizedBox(height: 20),
-                      CustomButton(
-                        primColor: AppColor.primaryBackgroundColor,
-                        secColor: AppColor.secondaryColor,
-                        buttonText: "Ok",
-                        path: 'assets/arrow_nav.svg',
-                        callB: () {
-                          Get.back();
+                      child: CustTable(
+                        isClickable: true,
+                        onCLick: (index) {
+                          Get.to(TodaysVisitDetails(
+                            todaysVisitItem: controller.todaysVisitList?[index],
+                          ));
                         },
-                        textColor: Colors.white,
-                        iconColor: Colors.white,
-                        buttonFontSize: 16,
-                        buttonWidth: 90,
-                      )
-                    ],
-                  ),
-                ),
-              ),
+                        l1: List.generate(
+                            controller.todaysVisitList?.length ?? 0,
+                            (index) => (index + 1).toString()),
+                        l2: controller.todaysVisitList
+                                ?.map((e) => e.resourceName)
+                                .toList() ??
+                            [],
+                        l3: controller.todaysVisitList
+                                ?.map((e) => e.noOfVisit)
+                                .toList() ??
+                            [],
+                        l4: controller.todaysVisitList
+                                ?.map((e) => e.newCustomer)
+                                .toList() ??
+                            [],
+                        tableHeader: const [
+                          "Sr.\nNo",
+                          "Resource\nName",
+                          "No. of\nVisits",
+                          "New\nCustomers"
+                        ],
+                      ).paddingOnly(left: 8, right: 8, top: 10),
+                    )
+                  : Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/nodata.png'),
+                            const SizedBox(height: 20),
+                            CustomText(
+                                text: "Data Not Found",
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                textColor: AppColor.black,
+                                textAlign: TextAlign.center,
+                                fontFam: "Nunito Sans"),
+                            const SizedBox(height: 20),
+                            CustomText(
+                                text: "Maybe go back and try different keyword?",
+                                fontSize: 18,
+                                fontWeight: FontWeight.normal,
+                                textColor: AppColor.borderGrey,
+                                textAlign: TextAlign.center,
+                                fontFam: "Nunito Sans"),
+                            const SizedBox(height: 20),
+                            CustomButton(
+                              primColor: AppColor.primaryBackgroundColor,
+                              secColor: AppColor.secondaryColor,
+                              buttonText: "Ok",
+                              path: 'assets/arrow_nav.svg',
+                              callB: () {
+                                Get.back();
+                              },
+                              textColor: Colors.white,
+                              iconColor: Colors.white,
+                              buttonFontSize: 16,
+                              buttonWidth: 90,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
             ],
           );
         });
+  }
+
+  Widget _buildSkeletonTable() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8, right: 8, top: 10),
+        child: Table(
+          columnWidths: const {
+            0: FlexColumnWidth(1),
+            1: FlexColumnWidth(2.8),
+            2: FlexColumnWidth(1),
+            3: FlexColumnWidth(1.2),
+          },
+          children: [
+            _skeletonHeaderRow(),
+            for (int i = 0; i < 8; i++) _skeletonDataRow(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  TableRow _skeletonHeaderRow() {
+    return TableRow(
+      children: List.generate(4, (index) {
+        return TableCell(
+          child: Container(
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppColor.primaryBackgroundColor.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.only(
+                topLeft: index == 0
+                    ? const Radius.circular(10)
+                    : Radius.zero,
+                topRight: index == 3
+                    ? const Radius.circular(10)
+                    : Radius.zero,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Container(
+              width: 40,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  TableRow _skeletonDataRow() {
+    return TableRow(
+      children: List.generate(4, (index) {
+        return TableCell(
+          verticalAlignment: TableCellVerticalAlignment.middle,
+          child: Container(
+            height: 60,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              border: Border.symmetric(
+                horizontal: BorderSide(color: Color(0xFFE0E0E0)),
+                vertical: BorderSide(color: Color(0xFFE0E0E0)),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Container(
+              width: double.infinity,
+              height: 14,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
   }
 
   Widget _buildOfflineBanner() {

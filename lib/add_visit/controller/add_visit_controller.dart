@@ -15,11 +15,11 @@ import 'package:marketingapp/add_visit/model/purpose_of_visit_model.dart';
 import 'package:marketingapp/add_visit/model/services_model.dart';
 import 'package:marketingapp/add_visit/model/start_route_model.dart';
 import 'package:marketingapp/add_visit/model/visit_type_model.dart';
-import 'package:marketingapp/dashboard/dashboard_screen.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/dashboard/model/dash_count_model.dart';
 import 'package:marketingapp/dashboard/model/district_list_model.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
-import 'package:marketingapp/dashboard/my_visits_screen.dart';
+import 'package:marketingapp/dashboard/screen/dashboard_screen.dart';
+import 'package:marketingapp/dashboard/screen/my_visits_screen.dart';
 import 'package:marketingapp/utils/api_urls.dart';
 import 'package:marketingapp/utils/network_call.dart';
 import 'package:marketingapp/widgets/cust_toast.dart';
@@ -299,8 +299,6 @@ class AddVisitController extends GetxController {
   }
 
   getPunchInDetails(String userID, String punchId) async {
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl1}${ApiConstants.getPunchInDetails}?UserID=$punchId&MEUserID=$userID");
 
@@ -311,18 +309,14 @@ class AddVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         punchInDetailsModel = PunchInDetailsModel.fromJson(data);
         status = data['message'];
-        CustomMessage.hideLoader();
         update();
       } else {
         punchInDetailsModel = PunchInDetailsModel.fromJson(data);
-
         status = data['message'];
-        CustomMessage.hideLoader();
         update();
       }
     }
@@ -399,8 +393,6 @@ class AddVisitController extends GetxController {
   }
 
   getVisitType() async {
-    CustomMessage.showLoader();
-
     final uri =
         Uri.parse("${ApiConstants.baseUrl1}${ApiConstants.getVisitType}");
 
@@ -411,25 +403,18 @@ class AddVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         visitTypeModel = VisitTypeModel.fromJson(data);
-
         status = data['message'];
-        CustomMessage.hideLoader();
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
   }
 
   getClientStatus() async {
-    CustomMessage.showLoader();
-
     final uri =
         Uri.parse("${ApiConstants.baseUrl1}${ApiConstants.clientStatus}");
 
@@ -440,27 +425,18 @@ class AddVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      // isLoading = false;
-
-      //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         clientStatusModel = ClientStatusModel.fromJson(data);
-
         status = data['message'];
-        CustomMessage.hideLoader();
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
   }
 
   getContactPersonDesig() async {
-    CustomMessage.showLoader();
-
     final uri =
         Uri.parse("${ApiConstants.baseUrl1}${ApiConstants.contactPersonDesig}");
 
@@ -475,21 +451,15 @@ class AddVisitController extends GetxController {
       if (data['status'] == 'Success') {
         contactPersonDesignationModel =
             ContactPersonDesignationModel.fromJson(data);
-
         status = data['message'];
-        CustomMessage.hideLoader();
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
   }
 
   getContactPersonStatus() async {
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl1}${ApiConstants.contactPersonStatus}");
 
@@ -503,13 +473,9 @@ class AddVisitController extends GetxController {
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         contactPersonStatusModel = ContactPersonStatusModel.fromJson(data);
-
         status = data['message'];
-        CustomMessage.hideLoader();
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
@@ -549,10 +515,6 @@ class AddVisitController extends GetxController {
   }
 
   getMarketingPersons(String userId) async {
-    // isLoading = true;
-    // update();
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.getMarketingPersons}?USERID=$userId");
 
@@ -563,27 +525,18 @@ class AddVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      // isLoading = false;
-      CustomMessage.hideLoader();
-
-      //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         marketingPersonModel = MarketingPersonModel.fromJson(data);
-
         status = data['message'];
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
   }
 
   getServicesList() async {
-    CustomMessage.showLoader();
-
     final uri =
         Uri.parse("${ApiConstants.baseUrl}${ApiConstants.servicesList}");
 
@@ -597,13 +550,9 @@ class AddVisitController extends GetxController {
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         servicesModel = ServicesModel.fromJson(data);
-
         status = data['message'];
-        CustomMessage.hideLoader();
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();

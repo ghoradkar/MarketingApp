@@ -172,14 +172,13 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
           textAlign: TextAlign.start,
           fontFam: 'Nunito Sans',
         ),
-
         actions: [
           InkWell(
             onTap: () {
               Get.to(() => SampleCollectionHistoryScreen(
-                empCode:
-                userData?['output']?[0]?['EmpCode']?.toString() ?? '',
-              ));
+                    empCode:
+                        userData?['output']?[0]?['EmpCode']?.toString() ?? '',
+                  ));
             },
             child: Image.asset(
               "assets/sample_history.png",
@@ -207,7 +206,7 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
                 }
               },
               child: Container(
-                padding: EdgeInsets.symmetric(vertical: 2,horizontal: 2),
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 2),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
                     border: Border.all(color: AppColor.black)),
@@ -264,7 +263,6 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
           //     height: 20.h,
           //   ).paddingOnly(right: 6.w),
           // ),
-
         ],
         leading: IconButton(
             onPressed: () {
@@ -633,40 +631,57 @@ class SampleCollectionCollectedOrSubmitted extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _skeletonRow(120),
-            _skeletonRow(60),
-            _skeletonRow(50),
-            _skeletonRow(90),
-            _skeletonRow(70),
-            Row(
-              children: [
-                Expanded(child: _skeletonRow(80)),
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
+            _skeletonRow(200, 50),
+            _skeletonRow(200, 50),
+            _skeletonRow(200, 50),
+            _skeletonRow(200, 50),
+            _skeletonRow(200, 50),
+            // Row(
+            //   children: [
+            //     Expanded(child: _skeletonRow(80)),
+            //     Container(
+            //       width: 24,
+            //       height: 24,
+            //       decoration: BoxDecoration(
+            //         color: Colors.grey.shade300,
+            //         borderRadius: BorderRadius.circular(4),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
     );
   }
 
-  Widget _skeletonRow(double width) {
+  Widget _skeletonRow(double w1, double w2) {
     return Padding(
       padding: const EdgeInsets.only(top: 4),
-      child: Container(
-        width: width,
-        height: 14,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(4),
-        ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              width: w1,
+              height: 14,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Container(
+            width: w2,
+            height: 14,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ],
       ),
     );
   }
