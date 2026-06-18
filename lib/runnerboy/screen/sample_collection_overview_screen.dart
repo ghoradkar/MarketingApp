@@ -292,11 +292,11 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(12.w, 12.h, 12.w, 0),
+      padding: EdgeInsets.fromLTRB(8.w, 12.h, 8.w, 0),
       child: Card(
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 1.5,
+        elevation: 0.5,
         color: Colors.white,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
@@ -320,7 +320,7 @@ class _SummaryCard extends StatelessWidget {
                     children: [
                       CustomText(
                         text: title,
-                        fontSize: 13.sp,
+                        fontSize: 12.sp,
                         fontWeight: FontWeight.bold,
                         textColor: AppColor.black,
                         textAlign: TextAlign.start,
@@ -400,7 +400,7 @@ class _MemberCard extends StatelessWidget {
         margin: EdgeInsets.only(bottom: 10.h),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 1.5,
+        elevation: 0.5,
         color: Colors.white,
         child: Padding(
           padding:
@@ -409,13 +409,13 @@ class _MemberCard extends StatelessWidget {
             children: [
               // Name + zone
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
                       text: member.name ?? '',
-                      fontSize: 13.sp,
+                      fontSize: 12.sp,
                       fontWeight: FontWeight.bold,
                       textColor: AppColor.black,
                       textAlign: TextAlign.start,
@@ -424,7 +424,7 @@ class _MemberCard extends StatelessWidget {
                     SizedBox(height: 3.h),
                     CustomText(
                       text: member.zone ?? '',
-                      fontSize: 11.sp,
+                      fontSize: 10.sp,
                       fontWeight: FontWeight.normal,
                       textColor: AppColor.textGrey,
                       textAlign: TextAlign.start,
@@ -507,7 +507,7 @@ class _StatBox extends StatelessWidget {
           SizedBox(height: 3.h),
           CustomText(
             text: count.toString(),
-            fontSize: 13.sp,
+            fontSize: 12.sp,
             fontWeight: FontWeight.bold,
             textColor: color,
             textAlign: TextAlign.center,
@@ -515,7 +515,7 @@ class _StatBox extends StatelessWidget {
           ),
           CustomText(
             text: label,
-            fontSize: 9.sp,
+            fontSize: 10.sp,
             fontWeight: FontWeight.normal,
             textColor: color,
             textAlign: TextAlign.center,

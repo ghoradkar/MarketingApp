@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/availability/availability_screen.dart';
-import 'package:marketingapp/lab_accession/receive_sample.dart';
+import 'package:marketingapp/availability/screen/availability_screen.dart';
+import 'package:marketingapp/lab_accession/screen/receive_sample.dart';
 import 'package:marketingapp/login/login_controller.dart';
-import 'package:marketingapp/runnerboy/sample_collection_start_route.dart';
-import 'package:marketingapp/sample_collection_tracking/sample_collection_tracking.dart';
+import 'package:marketingapp/runnerboy/screen/sample_collection_start_route.dart';
+import 'package:marketingapp/sample_collection_tracking/screen/sample_collection_tracking.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/widgets/dash_card.dart';
 import 'package:marquee/marquee.dart';
@@ -24,7 +24,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final LoginController loginController = Get.find<LoginController>();
-    final isLoading = loginController.mainDashBoardCount == null;
+    final isLoading = loginController.isDashLoading;
 
     return Column(
       children: [
@@ -34,10 +34,9 @@ class PlusCareAndLifenityDash extends StatelessWidget {
               child: DashCardCounts(
                 secondCountFontSize: 14.sp,
                 secondCountTextFontSize: 12.sp,
-                secondCount: isLoading
-                    ? '0'
-                    : formatLargeNumber(
-                        loginController.mainDashBoardCount?.patientCount),
+                isLoading: isLoading,
+                secondCount: formatLargeNumber(
+                    loginController.mainDashBoardCount?.patientCount),
                 secondCountText: "Patients",
                 iconPath: 'assets/patients.svg',
                 cardHeight: 100.h,
@@ -47,10 +46,9 @@ class PlusCareAndLifenityDash extends StatelessWidget {
               child: DashCardCounts(
                 secondCountFontSize: 14.sp,
                 secondCountTextFontSize: 12.sp,
-                secondCount: isLoading
-                    ? '0'
-                    : formatLargeNumber(
-                        loginController.mainDashBoardCount?.testReportedCount),
+                isLoading: isLoading,
+                secondCount: formatLargeNumber(
+                    loginController.mainDashBoardCount?.testReportedCount),
                 secondCountText: "No. of Tests",
                 iconPath: 'assets/testtube.svg',
                 cardHeight: 100.h,
@@ -64,10 +62,9 @@ class PlusCareAndLifenityDash extends StatelessWidget {
               child: DashCardCounts(
                 secondCountFontSize: 14.sp,
                 secondCountTextFontSize: 12.sp,
-                secondCount: isLoading
-                    ? '0'
-                    : formatLargeNumber(
-                        loginController.mainDashBoardCount?.facilityCount),
+                isLoading: isLoading,
+                secondCount: formatLargeNumber(
+                    loginController.mainDashBoardCount?.facilityCount),
                 secondCountText: "Customers",
                 iconPath: 'assets/customer.svg',
                 cardHeight: 100.h,
@@ -77,10 +74,9 @@ class PlusCareAndLifenityDash extends StatelessWidget {
               child: DashCardCounts(
                 secondCountFontSize: 14.sp,
                 secondCountTextFontSize: 12.sp,
-                secondCount: isLoading
-                    ? '0'
-                    : formatLargeNumber(
-                        loginController.mainDashBoardCount?.totalLab),
+                isLoading: isLoading,
+                secondCount: formatLargeNumber(
+                    loginController.mainDashBoardCount?.totalLab),
                 secondCountText: "No. of Labs",
                 iconPath: 'assets/labs.svg',
                 cardHeight: 100.h,
@@ -88,7 +84,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
             ),
           ],
         ),
-        getCardsAccordingToUser(designation),
+        getCardsAccordingToUser(designation, isLoading),
         if (FlavorConfig.instance.name == "Lifenity Operational")
           const Spacer(),
         if (FlavorConfig.instance.name == "Lifenity Operational")
@@ -133,7 +129,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
     );
   }
 
-  Widget getCardsAccordingToUser(String type) {
+  Widget getCardsAccordingToUser(String type, bool isLoading) {
     switch (type) {
       case 'Manager':
         return Column(
@@ -149,6 +145,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                     secondCountText: "Visit Dashboard",
                     iconPath: 'assets/addvisit.svg',
                     cardHeight: 75.h,
+                    isLoading: isLoading,
                     onTap: () => myVisitsCallB?.call(),
                   ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
                 ),
@@ -205,6 +202,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                     secondCountText: "Visit Dashboard",
                     iconPath: 'assets/addvisit.svg',
                     cardHeight: 75.h,
+                    isLoading: isLoading,
                     onTap: () => myVisitsCallB?.call(),
                   ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
                 ),
@@ -260,11 +258,11 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                     : 'My Visits',
                 iconPath: 'assets/addvisit.svg',
                 cardHeight: 75.h,
+                isLoading: isLoading,
                 onTap: () => myVisitsCallB?.call(),
               ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
             ),
             Expanded(
-              // child: SizedBox.shrink(),
               child: DashCard(
                 onTap: () => Get.to(const AvailabilityScreen()),
                 secondCountFontSize: 22,
@@ -273,6 +271,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                 secondCountText: "Availability",
                 iconPath: 'assets/activeclient.svg',
                 cardHeight: 75,
+                isLoading: isLoading,
                 backGroundColorIcon: AppColor.secondaryColor,
               ).paddingSymmetric(vertical: 8, horizontal: 10),
             ),
@@ -292,6 +291,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                 secondCountText: "Sample\nCollection",
                 iconPath: 'assets/location-pin.svg',
                 cardHeight: 75.h,
+                isLoading: isLoading,
               ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
             ),
             Expanded(
@@ -303,6 +303,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                 secondCountText: "Availability",
                 iconPath: 'assets/activeclient.svg',
                 cardHeight: 75,
+                isLoading: isLoading,
                 backGroundColorIcon: AppColor.secondaryColor,
               ).paddingSymmetric(vertical: 8, horizontal: 10),
             ),
@@ -322,10 +323,10 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                 secondCountText: "Receive\nSample",
                 iconPath: 'assets/location-pin.svg',
                 cardHeight: 75.h,
+                isLoading: isLoading,
               ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
             ),
             Expanded(
-              // child: SizedBox.shrink(),
               child: DashCard(
                 onTap: () => Get.to(const AvailabilityScreen()),
                 secondCountFontSize: 22,
@@ -334,6 +335,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                 secondCountText: "Availability",
                 iconPath: 'assets/activeclient.svg',
                 cardHeight: 75,
+                isLoading: isLoading,
                 backGroundColorIcon: AppColor.secondaryColor,
               ).paddingSymmetric(vertical: 8, horizontal: 10),
             ),
@@ -353,6 +355,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                 secondCountText: "Sample\nCollection",
                 iconPath: 'assets/location-pin.svg',
                 cardHeight: 75.h,
+                isLoading: isLoading,
               ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
             ),
             Expanded(
@@ -364,6 +367,7 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                 secondCountText: "Sample\nCollection\nTracking",
                 iconPath: 'assets/location-pin.svg',
                 cardHeight: 75.h,
+                isLoading: isLoading,
                 backGroundColorIcon: AppColor.secondaryColor,
               ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
             ),

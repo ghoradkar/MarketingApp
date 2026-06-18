@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/widgets/common_svg.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class VisitDashCardCounts extends StatelessWidget {
   final String? secondCount;
@@ -108,6 +109,7 @@ class DashCard extends StatelessWidget {
   final double secondCountTextFontSize;
   final Function onTap;
   final Color backGroundColorIcon;
+  final bool isLoading;
 
   const DashCard({
     super.key,
@@ -124,14 +126,13 @@ class DashCard extends StatelessWidget {
     required this.secondCountTextFontSize,
     required this.backGroundColorIcon,
     required this.onTap,
+    this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        onTap();
-      },
+      onTap: isLoading ? null : () => onTap(),
       child: Container(
         height: cardHeight,
         decoration: BoxDecoration(
@@ -159,14 +160,28 @@ class DashCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: CustomText(
-                text: secondCountText ?? "",
-                fontSize: secondCountTextFontSize,
-                fontWeight: FontWeight.normal,
-                textColor: AppColor.black,
-                textAlign: TextAlign.start,
-                fontFam: 'Nunito Sans',
-              ).paddingOnly(left: 8.w, right: 8.w),
+              child: isLoading
+                  ? Shimmer(
+                      colorOpacity: 0.6,
+                      duration: const Duration(seconds: 2),
+                      direction: const ShimmerDirection.fromLeftToRight(),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10.w),
+                        height: 14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    )
+                  : CustomText(
+                      text: secondCountText ?? "",
+                      fontSize: secondCountTextFontSize,
+                      fontWeight: FontWeight.normal,
+                      textColor: AppColor.black,
+                      textAlign: TextAlign.start,
+                      fontFam: 'Nunito Sans',
+                    ).paddingOnly(left: 8.w, right: 8.w),
             ),
           ],
         ),
@@ -189,6 +204,7 @@ class DashCardCounts extends StatelessWidget {
   final double secondCountFontSize;
   final double secondCountTextFontSize;
   final Function? onClicked;
+  final bool isLoading;
 
   // final Color? cardColor;
 
@@ -207,66 +223,107 @@ class DashCardCounts extends StatelessWidget {
     required this.secondCountTextFontSize,
     this.isTodaysVisit,
     this.onClicked,
+    this.isLoading = false,
     // this.cardColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        onClicked!();
-      },
+      onTap: isLoading ? null : () => onClicked?.call(),
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 4.w),
         height: cardHeight,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Color(0xffF5F5F5),
-            border:
-                Border.all(color: AppColor.borderGrey.withValues(alpha: 0.2))),
-        child: Row(
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          // Space between each child
+          borderRadius: BorderRadius.circular(12),
+          color: const Color(0xffF5F5F5),
+          border: Border.all(color: AppColor.borderGrey.withValues(alpha: 0.2)),
+        ),
+        child: isLoading ? _buildSkeleton() : _buildContent(),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        CommonSvg(
+          path: iconPath,
+          width: 30.w,
+          height: 30.h,
+          parentWidth: 30.w,
+          parentHeight: 30.h,
+          color: AppColor.primaryBackgroundColor,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Image.asset(
-            //   iconPath,
-            //   color: AppColor.primaryBackgroundColor,
-            //   width: 36,
-            // ),
-            CommonSvg(
-              path: iconPath,
-              width: 30.w,
-              height: 30.h,
-              parentWidth: 30.w,
-              parentHeight: 30.h,
-              color: AppColor.primaryBackgroundColor,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              // Center contents vertically
-              children: [
-                CustomText(
-                  text: secondCount ?? "",
-                  fontSize: secondCountFontSize,
-                  fontWeight: FontWeight.bold,
-                  textColor: AppColor.black,
-                  textAlign: TextAlign.start,
-                  fontFam: 'Nunito Sans',
-                ).paddingOnly(bottom: 10.h, left: 8.w),
-                CustomText(
-                  text: secondCountText ?? "",
-                  fontSize: secondCountTextFontSize,
-                  fontWeight: FontWeight.normal,
-                  textColor: AppColor.black,
-                  textAlign: TextAlign.start,
-                  fontFam: 'Nunito Sans',
-                ).paddingOnly(left: 8.w),
-              ],
-            ),
+            CustomText(
+              text: secondCount ?? "",
+              fontSize: secondCountFontSize,
+              fontWeight: FontWeight.bold,
+              textColor: AppColor.black,
+              textAlign: TextAlign.start,
+              fontFam: 'Nunito Sans',
+            ).paddingOnly(bottom: 10.h, left: 8.w),
+            CustomText(
+              text: secondCountText ?? "",
+              fontSize: secondCountTextFontSize,
+              fontWeight: FontWeight.normal,
+              textColor: AppColor.black,
+              textAlign: TextAlign.start,
+              fontFam: 'Nunito Sans',
+            ).paddingOnly(left: 8.w),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // Icon placeholder
+          Container(
+            width: 30.w,
+            height: 30.h,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Count placeholder
+              Container(
+                width: 52.w,
+                height: secondCountFontSize,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ).paddingOnly(bottom: 10.h, left: 8.w),
+              // Label placeholder
+              Container(
+                width: 64.w,
+                height: secondCountTextFontSize,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ).paddingOnly(left: 8.w),
+            ],
+          ),
+        ],
       ),
     );
   }

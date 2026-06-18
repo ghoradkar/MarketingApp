@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/io_client.dart';
-import 'package:marketingapp/dashboard/dashboard_screen.dart';
 import 'package:marketingapp/dashboard/model/main_dashboard_count.dart';
+import 'package:marketingapp/dashboard/screen/dashboard_screen.dart';
 import 'package:marketingapp/login/model/login_resp_model.dart';
 import 'package:marketingapp/utils/api_urls.dart';
 import 'package:marketingapp/utils/network_call.dart';
@@ -28,6 +28,7 @@ class LoginController extends GetxController {
   LoginRespModel? loginRespModel;
 
   MainDashBoardCount? mainDashBoardCount;
+  bool isDashLoading = false;
 
   login(String username, String password) async {
     CustomMessage.showLoader();
@@ -87,10 +88,9 @@ class LoginController extends GetxController {
   }
 
   Future<void> getMainDashCount() async {
-    CustomMessage.showLoader();
+    isDashLoading = true;
+    update();
     try {
-      CustomMessage.showLoader();
-
       final uri = Uri.parse(ApiConstants.baseUrl3);
       debugPrint("Calling: $uri");
 
@@ -105,42 +105,24 @@ class LoginController extends GetxController {
       debugPrint("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
-        CustomMessage.hideLoader();
-
         try {
           final data = json.decode(response.body);
-
-          // Check if it's valid JSON and contains the expected keys
-          // if (data is Map && data.containsKey('output')) {
           mainDashBoardCount = MainDashBoardCount.fromJson(data);
           status = data['message'];
-          // }
-          // else {
-          //   debugPrint("⚠ Unexpected API response structure");
-          //   status = "Unexpected response format";
-          // }
         } catch (e) {
-          CustomMessage.hideLoader();
-
           debugPrint("❌ JSON Decode Error: $e");
           status = "Invalid response from server";
         }
       } else {
-        CustomMessage.hideLoader();
-
         debugPrint("❌ API Error: ${response.statusCode}");
         status = "Server error (${response.statusCode})";
       }
     } catch (e) {
-      CustomMessage.hideLoader();
-
       debugPrint("❌ Exception: $e");
       status = "Something went wrong: $e";
     } finally {
-      CustomMessage.hideLoader();
-
-      CustomMessage.hideLoader();
-      update(); // Notifies UI (if using GetX)
+      isDashLoading = false;
+      update();
     }
   }
 }
