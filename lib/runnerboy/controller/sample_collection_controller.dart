@@ -375,8 +375,6 @@ class SampleCollectionController extends GetxController {
   }
 
   getSampleTempList() async {
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(ApiConstants.baseUrl + ApiConstants.tempList);
 
     debugPrint(uri.path);
@@ -386,7 +384,6 @@ class SampleCollectionController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         TempratureModel tempratureModel = TempratureModel.fromJson(data);
@@ -394,8 +391,6 @@ class SampleCollectionController extends GetxController {
       } else {
         collectedList = null;
         submittedList = null;
-
-        CustomMessage.hideLoader();
       }
     }
     update();
@@ -730,7 +725,6 @@ class SampleCollectionController extends GetxController {
     SampleCollectedSubmitedOutput? sampleCollectionItem,
   ) async {
     try {
-      CustomMessage.showLoader();
       if (sampleCollectionItem == null) return;
 
       // Download image
@@ -858,8 +852,6 @@ class SampleCollectionController extends GetxController {
       update();
     } catch (e) {
       debugPrint("setFieldOnEditOnRunnerBoy error: $e");
-    } finally {
-      CustomMessage.hideLoader();
     }
   }
 

@@ -7,7 +7,7 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/add_visit/model/marketing_person_model.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/runnerboy/model/get_center_id_and_available_fund.dart';
 import 'package:marketingapp/runnerboy/model/sample_collected_submitted_model.dart';
 import 'package:marketingapp/utils/color_constants.dart';
@@ -22,7 +22,7 @@ import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:marketingapp/widgets/my_custom_dropdown.dart';
 import 'package:marketingapp/widgets/no_internet_connectivity.dart';
 import 'package:marketingapp/widgets/view_image.dart';
-import 'controller/sample_collection_controller.dart';
+import '../controller/sample_collection_controller.dart';
 
 class CollectSample extends StatefulWidget {
   final CenterIdAndAvailableFundOutput? hospitalDetails;
@@ -1224,15 +1224,19 @@ class _CollectSampleState extends State<CollectSample>
   }
 
   Future<void> getUserData() async {
-    userData = await SharedPref().read(const SharedPrefConstant().kUserData);
-    await fetchLocation();
-    await collectSampleController.getSampleTempList();
-    collectSampleController.update();
-    if (widget.isEdit) {
-      collectSampleController
-          .setFieldOnEditOnRunnerBoy(widget.sampleCollectionItem);
-    } else {
-      resetFiled();
+    try {
+      userData = await SharedPref().read(const SharedPrefConstant().kUserData);
+      await fetchLocation();
+      await collectSampleController.getSampleTempList();
+      collectSampleController.update();
+      if (widget.isEdit) {
+        await collectSampleController
+            .setFieldOnEditOnRunnerBoy(widget.sampleCollectionItem);
+      } else {
+        resetFiled();
+      }
+    } finally {
+      CustomMessage.hideLoader();
     }
   }
 
@@ -1253,8 +1257,9 @@ class _CollectSampleState extends State<CollectSample>
   }
 
   checkInternetAndLoadData() async {
+    CustomMessage.showLoader();
     final List<ConnectivityResult> connectivityResult =
-    await (Connectivity().checkConnectivity());
+        await (Connectivity().checkConnectivity());
     if (connectivityResult.contains(ConnectivityResult.mobile) ||
         connectivityResult.contains(ConnectivityResult.wifi)) {
       collectSampleController.hasInternet = true;
@@ -1263,7 +1268,9 @@ class _CollectSampleState extends State<CollectSample>
     }
     collectSampleController.update();
     if (collectSampleController.hasInternet) {
-      getUserData();
+      await getUserData();
+    } else {
+      CustomMessage.hideLoader();
     }
   }
 
