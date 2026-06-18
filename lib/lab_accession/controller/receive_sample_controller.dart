@@ -36,6 +36,8 @@ class ReceiveSampleController extends GetxController {
 
   List<AcceptedPendingOutput>? acceptedList;
 
+  bool isListLoading = true;
+
   // bool shouldValidate = false;
 
   getLabNameList(String userId) async {
@@ -127,49 +129,51 @@ class ReceiveSampleController extends GetxController {
   }
 
   getCollectedSampleList(String date, String userId, String labCode) async {
-    CustomMessage.showLoader();
-
-    final uri = Uri.parse(
-        "${ApiConstants.baseUrl1}${ApiConstants.collectedSampleList}");
-
-    debugPrint(uri.path);
-
-    var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
-    var request = http.Request('POST', uri);
-    request.bodyFields = {'date': date, 'userid': userId, 'LabCode': labCode};
-
-    request.headers.addAll(headers);
-    var response = await ioClient.send(request);
-
-    debugPrint(response.statusCode.toString());
-
-    if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-
-      final data = json.decode(await response.stream.bytesToString());
-      if (data['status'] == 'Success') {
-        collectSampleListAccssionTeam =
-            SamplePendingFromAccession.fromJson(data);
-        pendingList = collectSampleListAccssionTeam!.output
-            .where((sample) => sample.isSampleAccepted == "0")
-            .toList();
-        acceptedList = collectSampleListAccssionTeam!.output
-            .where((sample) => sample.isSampleAccepted == "1")
-            .toList();
-
-        status = data['message'];
-        CustomMessage.toast(status);
-      } else {
-        status = data['message'];
-
-        CustomMessage.hideLoader();
-      }
-    } else {
-      CustomMessage.toast("Fail adding contact person");
-
-      CustomMessage.hideLoader();
-    }
+    isListLoading = true;
     update();
+
+    try {
+      final uri = Uri.parse(
+          "${ApiConstants.baseUrl1}${ApiConstants.collectedSampleList}");
+
+      debugPrint(uri.path);
+
+      var headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+      var request = http.Request('POST', uri);
+      request.bodyFields = {
+        'date': date,
+        'userid': userId,
+        'LabCode': labCode
+      };
+
+      request.headers.addAll(headers);
+      var response = await ioClient.send(request);
+
+      debugPrint(response.statusCode.toString());
+
+      if (response.statusCode == 200) {
+        final data = json.decode(await response.stream.bytesToString());
+        if (data['status'] == 'Success') {
+          collectSampleListAccssionTeam =
+              SamplePendingFromAccession.fromJson(data);
+          pendingList = collectSampleListAccssionTeam!.output
+              .where((sample) => sample.isSampleAccepted == "0")
+              .toList();
+          acceptedList = collectSampleListAccssionTeam!.output
+              .where((sample) => sample.isSampleAccepted == "1")
+              .toList();
+          status = data['message'];
+          CustomMessage.toast(status);
+        } else {
+          status = data['message'];
+        }
+      } else {
+        CustomMessage.toast("Fail adding contact person");
+      }
+    } finally {
+      isListLoading = false;
+      update();
+    }
   }
 
   acceptCollectedSampleFromRunnerBoy(String locId, String userId,

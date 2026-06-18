@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/lab_accession/controller/receive_sample_controller.dart';
 import 'package:marketingapp/lab_accession/model/sample_pending_from_accession.dart';
-import 'package:marketingapp/lab_accession/show_collected_sample.dart';
+import 'package:marketingapp/lab_accession/screen/show_collected_sample.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/data_not_found.dart';
@@ -14,6 +14,7 @@ import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:marketingapp/widgets/no_internet_connectivity.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AcceptPendingSample extends StatefulWidget {
   final String date;
@@ -62,8 +63,6 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
     userData = await SharedPref().read(const SharedPrefConstant().kUserData);
     await receiveSampleCollection.getCollectedSampleList(
         widget.date, widget.userId, widget.labCode);
-    CustomMessage.hideLoader();
-
     receiveSampleCollection.update();
   }
 
@@ -153,11 +152,13 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
                             SampleCollectionCollectedOrSubmitted(
                               collectedAndSubmittedList: controller.pendingList,
                               isAccepted: false,
+                              isLoading: controller.isListLoading,
                             ),
                             SampleCollectionCollectedOrSubmitted(
                               collectedAndSubmittedList:
                                   controller.acceptedList,
                               isAccepted: true,
+                              isLoading: controller.isListLoading,
                             )
                           ],
                         ),
@@ -292,16 +293,20 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
 
 class SampleCollectionCollectedOrSubmitted extends StatelessWidget {
   final bool isAccepted;
+  final bool isLoading;
   final List<AcceptedPendingOutput>? collectedAndSubmittedList;
 
   const SampleCollectionCollectedOrSubmitted({
     super.key,
     required this.isAccepted,
     this.collectedAndSubmittedList,
+    this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) return _buildSkeletonList();
+
     final list = collectedAndSubmittedList ?? const <AcceptedPendingOutput>[];
     if (list.isEmpty) return const DataNotFound();
 
@@ -363,6 +368,70 @@ class SampleCollectionCollectedOrSubmitted extends StatelessWidget {
           ).paddingSymmetric(vertical: 8, horizontal: 16),
         );
       },
+    );
+  }
+
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      itemCount: 5,
+      itemBuilder: (_, __) => _buildSkeletonCard(),
+    );
+  }
+
+  Widget _buildSkeletonCard() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: AppColor.borderGrey.withValues(alpha: 0.08),
+          border: Border.all(color: AppColor.borderGrey),
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _skeletonRow(140),
+                _skeletonRow(60),
+                _skeletonRow(50),
+                _skeletonRow(100),
+                _skeletonRow(70),
+                _skeletonRow(80),
+              ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _skeletonRow(double width) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Container(
+        width: width,
+        height: 14,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
     );
   }
 
