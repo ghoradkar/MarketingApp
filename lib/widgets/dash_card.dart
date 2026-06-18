@@ -237,7 +237,7 @@ class DashCardCounts extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           color: const Color(0xffF5F5F5),
-          border: Border.all(color: AppColor.borderGrey.withValues(alpha: 0.2)),
+          border: Border.all(color: AppColor.borderGrey.withValues(alpha: 0.6)),
         ),
         child: isLoading ? _buildSkeleton() : _buildContent(),
       ),
@@ -283,48 +283,53 @@ class DashCardCounts extends StatelessWidget {
   }
 
   Widget _buildSkeleton() {
-    return Shimmer(
-      colorOpacity: 0.6,
-      duration: const Duration(seconds: 2),
-      direction: const ShimmerDirection.fromLeftToRight(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // Icon placeholder
-          Container(
-            width: 30.w,
-            height: 30.h,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(6),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Count placeholder
-              Container(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // Real icon — same as content
+        CommonSvg(
+          path: iconPath,
+          width: 30.w,
+          height: 30.h,
+          parentWidth: 30.w,
+          parentHeight: 30.h,
+          color: AppColor.primaryBackgroundColor,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Count shimmer
+            Shimmer(
+              colorOpacity: 0.6,
+              duration: const Duration(seconds: 2),
+              direction: const ShimmerDirection.fromLeftToRight(),
+              child: Container(
                 width: 52.w,
                 height: secondCountFontSize,
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(4),
                 ),
-              ).paddingOnly(bottom: 10.h, left: 8.w),
-              // Label placeholder
-              Container(
+              ),
+            ).paddingOnly(bottom: 10.h, left: 8.w),
+            // Label shimmer
+            Shimmer(
+              colorOpacity: 0.6,
+              duration: const Duration(seconds: 2),
+              direction: const ShimmerDirection.fromLeftToRight(),
+              child: Container(
                 width: 64.w,
                 height: secondCountTextFontSize,
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(4),
                 ),
-              ).paddingOnly(left: 8.w),
-            ],
-          ),
-        ],
-      ),
+              ),
+            ).paddingOnly(left: 8.w),
+          ],
+        ),
+      ],
     );
   }
 }
