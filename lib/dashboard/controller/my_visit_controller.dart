@@ -321,8 +321,6 @@ class MyVisitControllerController extends GetxController {
 
   Future<void> _fetchCurrentLocation() async {
     try {
-      CustomMessage.showLoader();
-
       final LocationSettings locationSettings = LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 100,
@@ -412,7 +410,6 @@ class MyVisitControllerController extends GetxController {
       );
       debugPrint('Location exception: $e');
     } finally {
-      CustomMessage.hideLoader();
       update();
     }
   }
