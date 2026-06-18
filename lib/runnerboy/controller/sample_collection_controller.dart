@@ -39,6 +39,7 @@ class SampleCollectionController extends GetxController {
 
   bool hasInternet = true;
   bool isListLoading = true;
+  bool isCenterLoading = false;
   bool isSubmitting = false;
 
   // bool shouldValidate = false;
@@ -672,41 +673,38 @@ class SampleCollectionController extends GetxController {
   }
 
   getCenterId(String labCode, String distlgCode) async {
-    CustomMessage.showLoader();
-
-    final uri = Uri.parse(
-        "${ApiConstants.baseUrl1}${ApiConstants.getCenterId}?LabCode=$labCode&DISTLGDCODE=$distlgCode");
-
-    debugPrint(uri.path);
-
-    final response = await ioClient.get(uri);
-    debugPrint(response.statusCode.toString());
-    debugPrint("response.body : ${response.body}");
-
-    if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-
-      final data = json.decode(response.body);
-      if (data['status'] == 'Success') {
-        getCenterIdAndAvailableFund =
-            GetCenterIdAndAvailableFund.fromJson(data);
-
-        // status = data['message'];
-      } else {
-        // status = data['message'];
-        getCenterIdAndAvailableFund = null;
-        filteredCustomerList.clear();
-        CustomMessage.hideLoader();
-      }
-    }
+    isCenterLoading = true;
     update();
+
+    try {
+      final uri = Uri.parse(
+          "${ApiConstants.baseUrl1}${ApiConstants.getCenterId}?LabCode=$labCode&DISTLGDCODE=$distlgCode");
+
+      debugPrint(uri.path);
+
+      final response = await ioClient.get(uri);
+      debugPrint(response.statusCode.toString());
+      debugPrint("response.body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'Success') {
+          getCenterIdAndAvailableFund =
+              GetCenterIdAndAvailableFund.fromJson(data);
+          filteredCustomerList =
+              List.from(getCenterIdAndAvailableFund!.output);
+        } else {
+          getCenterIdAndAvailableFund = null;
+          filteredCustomerList.clear();
+        }
+      }
+    } finally {
+      isCenterLoading = false;
+      update();
+    }
   }
 
   getDistrictList(String stateCode) async {
-    // isLoading = true;
-    // update();
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.districtList}?STATELGDCODE=$stateCode");
 
@@ -717,17 +715,12 @@ class SampleCollectionController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-
-      //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         districtRespModel = DistrictListModel.fromJson(data);
-
         status = data['message'];
       } else {
         status = data['message'];
-        CustomMessage.hideLoader();
       }
     }
     update();

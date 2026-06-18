@@ -4,7 +4,7 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/dashboard/model/district_list_model.dart';
-import 'package:marketingapp/runnerboy/collect_sample.dart';
+import 'package:marketingapp/runnerboy/screen/collect_sample.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/model/get_center_id_and_available_fund.dart';
 import 'package:marketingapp/utils/color_constants.dart';
@@ -14,6 +14,7 @@ import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:marketingapp/widgets/dropdown_search.dart';
 import 'package:marketingapp/widgets/no_internet_connectivity.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class SampleCollectionDistrict extends StatefulWidget {
   const SampleCollectionDistrict({super.key});
@@ -140,6 +141,34 @@ class _SampleCollectionDistrictState extends State<SampleCollectionDistrict> {
   //   }
   // }
 
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      itemCount: 8,
+      itemBuilder: (context, index) => Shimmer(
+        colorOpacity: 0.6,
+        duration: const Duration(seconds: 2),
+        direction: const ShimmerDirection.fromLeftToRight(),
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 6.h),
+          padding: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColor.borderGrey),
+            color: AppColor.primaryBackgroundColor.withValues(alpha: 0.1),
+          ),
+          child: Container(
+            height: 18,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SampleCollectionController>(
@@ -236,17 +265,15 @@ class _SampleCollectionDistrictState extends State<SampleCollectionDistrict> {
                 SizedBox(
                   height: 10.h,
                 ),
-                if (controller.filteredCustomerList.isNotEmpty)
+                if (controller.isCenterLoading)
+                  Expanded(child: _buildSkeletonList())
+                else if (controller.filteredCustomerList.isNotEmpty)
                   Expanded(
                     child: Builder(
                       builder: (_) {
                         final visibleCustomers = controller
                             .filteredCustomerList
-                            .where(
-                                (e) =>
-                            (e.facilityName
-                                .trim()
-                                .isNotEmpty))
+                            .where((e) => e.facilityName.trim().isNotEmpty)
                             .toList();
 
                         if (visibleCustomers.isEmpty) {
@@ -261,70 +288,36 @@ class _SampleCollectionDistrictState extends State<SampleCollectionDistrict> {
                               onTap: () {
                                 Get.to(
                                   CollectSample(
-                                    hospitalDetails:
-                                    visibleCustomers[index],
+                                    hospitalDetails: visibleCustomers[index],
                                     isEdit: false,
                                   ),
                                 );
                               },
                               child: LocationCard(
-                                  locationDate:
-                                  visibleCustomers[index])
+                                      locationDate: visibleCustomers[index])
                                   .paddingSymmetric(vertical: 6.h),
                             );
                           },
                         );
                       },
                     ),
-                    // child: ListView.builder(
-                    //     shrinkWrap: true,
-                    //     itemCount: controller.filteredCustomerList.length,
-                    //     itemBuilder: (context, index) {
-                    //       //this is for if facilityName is empty then show customer in list
-                    //       final List<CenterIdAndAvailableFundOutput>
-                    //           visibleCustomers = controller
-                    //               .filteredCustomerList
-                    //               .where((e) =>
-                    //                   (e.facilityName.trim().isNotEmpty ??
-                    //                       false))
-                    //               .toList();
-                    //
-                    //       return InkWell(
-                    //         onTap: () {
-                    //           Get.to(CollectSample(
-                    //             hospitalDetails: visibleCustomers[index],
-                    //             isEdit: false,
-                    //           ));
-                    //         },
-                    //         child: LocationCard(
-                    //           locationDate: visibleCustomers[index],
-                    //         ).paddingSymmetric(
-                    //             vertical: 6, horizontal: 6),
-                    //       );
-                    //
-                    //
-                    //     }),
                   )
-                else
-                  if (selectedDist == null)
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/district.png'),
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        CustomText(
-                            text:
-                            "Select city to view\nthe customers lists.",
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                            textColor: AppColor.black,
-                            textAlign: TextAlign.center,
-                            fontFam: "Nunito Sans"),
-                      ],
-                    ).paddingOnly(top: 60.h)
+                else if (selectedDist == null)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/district.png'),
+                      SizedBox(height: 20.h),
+                      CustomText(
+                          text: "Select city to view\nthe customers lists.",
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          textColor: AppColor.black,
+                          textAlign: TextAlign.center,
+                          fontFam: "Nunito Sans"),
+                    ],
+                  ).paddingOnly(top: 60.h)
               ],
             ).paddingSymmetric(vertical: 4.h, horizontal: 20.w)
                 : InternetIssue(
