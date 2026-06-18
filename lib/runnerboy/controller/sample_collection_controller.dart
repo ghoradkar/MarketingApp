@@ -3,23 +3,22 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
 import 'package:http/io_client.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/dashboard/model/district_list_model.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
-import 'package:marketingapp/dashboard/dashboard_screen.dart';
+import 'package:marketingapp/dashboard/screen/dashboard_screen.dart';
 import 'package:marketingapp/lab_accession/model/sample_pending_from_accession.dart';
-import 'package:marketingapp/runnerboy/camera_capture_screen.dart';
-import 'package:marketingapp/runnerboy/collect_sample.dart';
+import 'package:marketingapp/runnerboy/screen/camera_capture_screen.dart';
+import 'package:marketingapp/runnerboy/screen/collect_sample.dart';
 import 'package:marketingapp/runnerboy/model/get_center_id_and_available_fund.dart';
 import 'package:marketingapp/runnerboy/model/sample_collected_submitted_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
 import 'package:marketingapp/runnerboy/model/start_route_sample_collection.dart';
 import 'package:marketingapp/runnerboy/model/temprature_model.dart';
-import 'package:marketingapp/runnerboy/sample_collection_start_route.dart';
+import 'package:marketingapp/runnerboy/screen/sample_collection_start_route.dart';
 import 'package:marketingapp/utils/api_urls.dart';
 import 'package:marketingapp/utils/network_call.dart';
 import 'package:marketingapp/widgets/cust_toast.dart';
@@ -39,6 +38,7 @@ class SampleCollectionController extends GetxController {
   List<SampleCollectedSubmitedOutput>? submittedList;
 
   bool hasInternet = true;
+  bool isListLoading = false;
   bool isSubmitting = false;
 
   // bool shouldValidate = false;
@@ -102,42 +102,45 @@ class SampleCollectionController extends GetxController {
   // final ImagePicker _picker = ImagePicker();
 
   getSampleCollectedList(userId) async {
-    CustomMessage.showLoader();
-
-    final uri = Uri.parse(
-        '${ApiConstants.baseUrl1 + ApiConstants.sampleCollectedList}?LOCID=0&userid=$userId&LabCode=0');
-
-    debugPrint(uri.path);
-
-    final response = await ioClient.get(uri);
-    debugPrint(response.statusCode.toString());
-    debugPrint("response.body : ${response.body}");
-
-    if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-      final data = json.decode(response.body);
-      if (data['status'] == 'Success') {
-        SampleCollectedSubmittedModel sampleCollectedSubmittedModel =
-            SampleCollectedSubmittedModel.fromJson(data);
-        List<SampleCollectedSubmitedOutput>? sampleCollectedSubmitedList =
-            sampleCollectedSubmittedModel.output;
-
-        collectedList = sampleCollectedSubmitedList
-            ?.where((sample) => sample.iSLabSubmit == "0")
-            .toList();
-
-        submittedList = sampleCollectedSubmitedList
-            ?.where((sample) => sample.iSLabSubmit == "1")
-            .toList();
-      } else {
-        collectedList = null;
-        submittedList = null;
-        status = data['message'];
-        CustomMessage.toast(status);
-        CustomMessage.hideLoader();
-      }
-    }
+    isListLoading = true;
     update();
+
+    try {
+      final uri = Uri.parse(
+          '${ApiConstants.baseUrl1 + ApiConstants.sampleCollectedList}?LOCID=0&userid=$userId&LabCode=0');
+
+      debugPrint(uri.path);
+
+      final response = await ioClient.get(uri);
+      debugPrint(response.statusCode.toString());
+      debugPrint("response.body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'Success') {
+          SampleCollectedSubmittedModel sampleCollectedSubmittedModel =
+              SampleCollectedSubmittedModel.fromJson(data);
+          List<SampleCollectedSubmitedOutput>? sampleCollectedSubmitedList =
+              sampleCollectedSubmittedModel.output;
+
+          collectedList = sampleCollectedSubmitedList
+              ?.where((sample) => sample.iSLabSubmit == "0")
+              .toList();
+
+          submittedList = sampleCollectedSubmitedList
+              ?.where((sample) => sample.iSLabSubmit == "1")
+              .toList();
+        } else {
+          collectedList = null;
+          submittedList = null;
+          status = data['message'];
+          CustomMessage.toast(status);
+        }
+      }
+    } finally {
+      isListLoading = false;
+      update();
+    }
   }
 
   getSampleCollectionHistory(

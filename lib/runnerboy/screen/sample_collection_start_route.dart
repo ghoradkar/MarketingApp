@@ -6,13 +6,13 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:marketingapp/dashboard/my_visit_controller.dart';
-import 'package:marketingapp/runnerboy/collect_sample.dart';
+import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
+import 'package:marketingapp/runnerboy/screen/collect_sample.dart';
 import 'package:marketingapp/runnerboy/model/sample_collected_submitted_model.dart';
-import 'package:marketingapp/runnerboy/sample_collection_history_screen.dart';
-import 'package:marketingapp/runnerboy/sample_collection_overview_screen.dart';
+import 'package:marketingapp/runnerboy/screen/sample_collection_history_screen.dart';
+import 'package:marketingapp/runnerboy/screen/sample_collection_overview_screen.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
-import 'package:marketingapp/runnerboy/sample_collection_district.dart';
+import 'package:marketingapp/runnerboy/screen/sample_collection_district.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/data_not_found.dart';
 import 'package:marketingapp/utils/session_manager.dart';
@@ -23,6 +23,7 @@ import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_popup.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/no_internet_connectivity.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'dart:convert';
 
 class SampleCollectionStartRoute extends StatefulWidget {
@@ -171,61 +172,99 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
           textAlign: TextAlign.start,
           fontFam: 'Nunito Sans',
         ),
-        actions: [
-          if (tabController.index == 0)
-            SizedBox(
-              height: 36.h,
-              child: CustomButton(
-                  buttonText: "Collect Sample",
-                  path: 'assets/arrow_nav.svg',
-                  callB: () {
-                    // if (collectSampleController.showStartRoute  &&
-                    //     collectSampleController
-                    //         .startRouteSampleCollectionModel?.status !=
-                    //         'Success')
 
-                    if (collectSampleController.showStartRoute) {
-                      CustomPopup.takeConfirmationDialog(() {
-                        Get.back();
-                      }, () async {
-                        Get.back();
-                      }, "It is mandatory to 'Start Route' from starting point before sample collection",
-                          'assets/destination.png', "Ok", 160.w);
-                    } else {
-                      Get.to(const SampleCollectionDistrict());
-                    }
-                  },
-                  buttonWidth: 140.w,
-                  primColor: AppColor.primaryBackgroundColor,
-                  secColor: AppColor.secondaryColor,
-                  textColor: AppColor.white,
-                  iconColor: AppColor.white,
-                  buttonFontSize: 12.sp),
-            ).paddingOnly(right: 6.w),
-          InkWell(
-            onTap: () {
-              Get.to(() => SampleCollectionOverviewScreen(
-                    empCode: userData?['output']?[0]?['EmpCode']?.toString() ?? '',
-                  ));
-            },
-            child: Image.asset(
-              "assets/users-group.png",
-              width: 20.w,
-              height: 20.h,
-            ).paddingOnly(right: 6.w),
-          ),
+        actions: [
           InkWell(
             onTap: () {
               Get.to(() => SampleCollectionHistoryScreen(
-                    empCode: userData?['output']?[0]?['EmpCode']?.toString() ?? '',
-                  ));
+                empCode:
+                userData?['output']?[0]?['EmpCode']?.toString() ?? '',
+              ));
             },
             child: Image.asset(
               "assets/sample_history.png",
-              width: 20.w,
-              height: 20.h,
+              width: 22.w,
+              height: 22.h,
             ).paddingOnly(right: 6.w),
-          )
+          ),
+          if (tabController.index == 0)
+            InkWell(
+              onTap: () {
+                // if (collectSampleController.showStartRoute  &&
+                //     collectSampleController
+                //         .startRouteSampleCollectionModel?.status !=
+                //         'Success')
+
+                if (collectSampleController.showStartRoute) {
+                  CustomPopup.takeConfirmationDialog(() {
+                    Get.back();
+                  }, () async {
+                    Get.back();
+                  }, "It is mandatory to 'Start Route' from starting point before sample collection",
+                      'assets/destination.png', "Ok", 160.w);
+                } else {
+                  Get.to(const SampleCollectionDistrict());
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 2,horizontal: 2),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                    border: Border.all(color: AppColor.black)),
+                child: CustomText(
+                    text: "Collect Sample",
+                    fontSize: 16,
+                    fontFam: "Nunito Sans",
+                    fontWeight: FontWeight.w600,
+                    textColor: AppColor.black,
+                    textAlign: TextAlign.start),
+              ),
+            ).paddingOnly(right: 6),
+          // if (tabController.index == 0)
+          //   SizedBox(
+          //     height: 36.h,
+          //     child: CustomButton(
+          //         buttonText: "Collect Sample",
+          //         path: 'assets/arrow_nav.svg',
+          //         callB: () {
+          //           // if (collectSampleController.showStartRoute  &&
+          //           //     collectSampleController
+          //           //         .startRouteSampleCollectionModel?.status !=
+          //           //         'Success')
+          //
+          //           if (collectSampleController.showStartRoute) {
+          //             CustomPopup.takeConfirmationDialog(() {
+          //               Get.back();
+          //             }, () async {
+          //               Get.back();
+          //             },
+          //                 "It is mandatory to 'Start Route' from starting point before sample collection",
+          //                 'assets/destination.png', "Ok", 160.w);
+          //           } else {
+          //             Get.to(const SampleCollectionDistrict());
+          //           }
+          //         },
+          //         buttonWidth: 140.w,
+          //         primColor: AppColor.primaryBackgroundColor,
+          //         secColor: AppColor.secondaryColor,
+          //         textColor: AppColor.white,
+          //         iconColor: AppColor.white,
+          //         buttonFontSize: 12.sp),
+          //   ).paddingOnly(right: 6.w),
+
+          // InkWell(
+          //   onTap: () {
+          //     Get.to(() => SampleCollectionOverviewScreen(
+          //           empCode: userData?['output']?[0]?['EmpCode']?.toString() ?? '',
+          //         ));
+          //   },
+          //   child: Image.asset(
+          //     "assets/users-group.png",
+          //     width: 20.w,
+          //     height: 20.h,
+          //   ).paddingOnly(right: 6.w),
+          // ),
+
         ],
         leading: IconButton(
             onPressed: () {
@@ -261,11 +300,13 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
                               collectedAndSubmittedList:
                                   controller.collectedList,
                               showStat: false,
+                              isLoading: controller.isListLoading,
                             ),
                             SampleCollectionCollectedOrSubmitted(
                               collectedAndSubmittedList:
                                   controller.submittedList,
                               showStat: true,
+                              isLoading: controller.isListLoading,
                             )
                           ],
                         ),
@@ -453,13 +494,20 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
 
 class SampleCollectionCollectedOrSubmitted extends StatelessWidget {
   final bool showStat;
+  final bool isLoading;
   final List<SampleCollectedSubmitedOutput>? collectedAndSubmittedList;
 
-  const SampleCollectionCollectedOrSubmitted(
-      {super.key, required this.showStat, this.collectedAndSubmittedList});
+  const SampleCollectionCollectedOrSubmitted({
+    super.key,
+    required this.showStat,
+    this.collectedAndSubmittedList,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) return _buildSkeletonList();
+
     return collectedAndSubmittedList != null &&
             collectedAndSubmittedList!.isNotEmpty
         ? ListView.builder(
@@ -560,6 +608,67 @@ class SampleCollectionCollectedOrSubmitted extends StatelessWidget {
               );
             })
         : const DataNotFound();
+  }
+
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      itemCount: 5,
+      itemBuilder: (context, index) => _buildSkeletonCard(),
+    );
+  }
+
+  Widget _buildSkeletonCard() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: Container(
+        margin: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: AppColor.borderGrey.withValues(alpha: 0.08),
+          border: Border.all(color: AppColor.borderGrey),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _skeletonRow(120),
+            _skeletonRow(60),
+            _skeletonRow(50),
+            _skeletonRow(90),
+            _skeletonRow(70),
+            Row(
+              children: [
+                Expanded(child: _skeletonRow(80)),
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _skeletonRow(double width) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Container(
+        width: width,
+        height: 14,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
+    );
   }
 
   Color getColor(String stat) {
