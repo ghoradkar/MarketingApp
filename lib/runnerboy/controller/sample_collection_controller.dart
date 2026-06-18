@@ -644,8 +644,6 @@ class SampleCollectionController extends GetxController {
 
   startRouteSampleCollection(String userID, String startRoute, String lat,
       String long, String routeDate, String createdBy) async {
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.startRouteSampleCollection}?UserID=$userID&StartRoute=$startRoute&StartLatitude=$lat&StartLongitude=$long&RRouteDate=$routeDate&Createdby=$createdBy");
 
@@ -656,26 +654,18 @@ class SampleCollectionController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         startRouteSampleCollectionModel =
             StartRouteSampleCollection.fromJson(data);
-        // showStartRoute = true;
-
-        // status = data['message'];
       } else if (data['status'] == 'Fail') {
-        // status = data['message'];
         startRouteSampleCollectionModel =
             StartRouteSampleCollection.fromJson(data);
         CustomMessage.toast(data['message']);
         debugPrint('failed startRouteSampleCollection');
-        CustomMessage.hideLoader();
       } else {
         CustomMessage.toast(data['message']);
         debugPrint('failed startRouteSampleCollection');
-        CustomMessage.hideLoader();
       }
     }
     update();
