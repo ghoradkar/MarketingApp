@@ -2,13 +2,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:marketingapp/lab_accession/accept_pending_sample.dart';
+import 'package:marketingapp/lab_accession/screen/accept_pending_sample.dart';
 import 'package:marketingapp/lab_accession/controller/receive_sample_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';
 import 'package:marketingapp/widgets/common_svg.dart';
-import 'package:marketingapp/widgets/cust_toast.dart';
 import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_date_field.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
@@ -296,8 +295,6 @@ class _ReceiveSampleScreenState extends State<ReceiveSampleScreen>
                             callB: () {
                               if (formKey.currentState?.validate() ??
                                   false) {
-                                CustomMessage.showLoader();
-
                                 Get.to(AcceptPendingSample(
                                   date: receiveSampleController
                                       .dateSendToApi!,
