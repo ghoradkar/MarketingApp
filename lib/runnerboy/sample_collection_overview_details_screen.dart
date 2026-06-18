@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
+import 'package:marketingapp/runnerboy/sample_collection_overview_date_details_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/data_not_found.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
@@ -179,7 +180,10 @@ class _SampleCollectionOverviewDetailsScreenState
                   padding: EdgeInsets.symmetric(
                       horizontal: 12.w, vertical: 8.h),
                   itemCount: list.length,
-                  itemBuilder: (ctx, i) => _DateWiseCard(item: list[i]),
+                  itemBuilder: (ctx, i) => _DateWiseCard(
+                    item: list[i],
+                    member: widget.member,
+                  ),
                 );
               },
             ),
@@ -296,8 +300,9 @@ class _PersonSummaryCard extends StatelessWidget {
 
 class _DateWiseCard extends StatelessWidget {
   final SampleCollectionHistoryOutput item;
+  final SampleCollectionOverviewMember member;
 
-  const _DateWiseCard({required this.item});
+  const _DateWiseCard({required this.item, required this.member});
 
   DateTime? get _date {
     if (item.collectionDate == null) return null;
@@ -328,7 +333,12 @@ class _DateWiseCard extends StatelessWidget {
     final dayName = item.dayName ??
         (date != null ? DateFormat('EEEE').format(date) : '');
 
-    return Card(
+    return GestureDetector(
+      onTap: () => Get.to(() => SampleCollectionOverviewDateDetailsScreen(
+            item: item,
+            member: member,
+          )),
+      child: Card(
       margin: EdgeInsets.only(bottom: 10.h),
       shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -441,6 +451,7 @@ class _DateWiseCard extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }
