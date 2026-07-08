@@ -6,7 +6,7 @@ import 'package:marketingapp/dashboard/controller/my_visit_controller.dart';
 import 'package:marketingapp/dashboard/screen/my_visits_screen.dart';
 import 'package:marketingapp/dashboard/screen/pluscare_and_lifenity_dash.dart';
 import 'package:marketingapp/dashboard/screen/uae_dash.dart';
-import 'package:marketingapp/login/login_controller.dart';
+import 'package:marketingapp/login/controller/login_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';

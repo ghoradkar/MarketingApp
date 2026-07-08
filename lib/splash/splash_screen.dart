@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/dashboard/screen/dashboard_screen.dart';
-import 'package:marketingapp/login/login_screen.dart';
+import 'package:marketingapp/login/screen/login_screen.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/session_manager.dart';
 import 'package:marketingapp/widgets/custom_text.dart';

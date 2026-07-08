@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/login/login_controller.dart';
+import 'package:marketingapp/login/controller/login_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/widgets/dash_card.dart';
 import 'package:marquee/marquee.dart';

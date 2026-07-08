@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
-import 'package:marketingapp/login/login_screen.dart';
+import 'package:marketingapp/login/screen/login_screen.dart';
 import 'package:marketingapp/utils/api_urls.dart';
 import 'package:marketingapp/utils/network_call.dart';
 import 'package:marketingapp/widgets/cust_toast.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/login/login_controller.dart';
+import 'package:marketingapp/login/controller/login_controller.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/session_manager.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';

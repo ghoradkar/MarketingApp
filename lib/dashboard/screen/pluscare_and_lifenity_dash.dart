@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:marketingapp/availability/screen/availability_screen.dart';
 import 'package:marketingapp/lab_accession/screen/receive_sample.dart';
-import 'package:marketingapp/login/login_controller.dart';
+import 'package:marketingapp/login/controller/login_controller.dart';
 import 'package:marketingapp/runnerboy/screen/sample_collection_start_route.dart';
 import 'package:marketingapp/sample_collection_tracking/screen/sample_collection_tracking.dart';
 import 'package:marketingapp/utils/color_constants.dart';

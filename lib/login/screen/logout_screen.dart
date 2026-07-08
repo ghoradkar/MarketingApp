@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:get/get.dart';
-import 'package:marketingapp/login/login_screen.dart';
+import 'package:marketingapp/login/screen/login_screen.dart';
 import 'package:marketingapp/utils/session_manager.dart';
 import 'package:marketingapp/utils/shared_pref_constants.dart';
 import 'package:marketingapp/utils/shared_preference.dart';
@@ -9,7 +9,7 @@ import 'package:marketingapp/widgets/cust_toast.dart';
 import 'package:marketingapp/widgets/custom_button.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../utils/color_constants.dart';
+import '../../utils/color_constants.dart';
 
 class LogoutScreen extends StatefulWidget {
   const LogoutScreen({super.key});
