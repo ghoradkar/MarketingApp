@@ -14,6 +14,7 @@ import 'package:marketingapp/runnerboy/screen/camera_capture_screen.dart';
 import 'package:marketingapp/runnerboy/screen/collect_sample.dart';
 import 'package:marketingapp/runnerboy/model/get_center_id_and_available_fund.dart';
 import 'package:marketingapp/runnerboy/model/sample_collected_submitted_model.dart';
+import 'package:marketingapp/runnerboy/model/sample_collection_history_detail_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
 import 'package:marketingapp/runnerboy/model/start_route_sample_collection.dart';
@@ -69,9 +70,22 @@ class SampleCollectionController extends GetxController {
 
   List<TempratureOutput>? tempList;
 
+  bool isHistoryLoading = false;
   List<SampleCollectionHistoryOutput>? historyList;
+
+  bool isHistoryDetailLoading = false;
+  List<SampleCollectionHistoryDetailOutput>? collectedDetailList;
+  List<SampleCollectionHistoryDetailOutput>? submittedDetailList;
+  List<SampleCollectionHistoryDetailOutput>? acceptedDetailList;
+  bool isOverviewLoading = false;
   List<SampleCollectionOverviewMember>? overviewMembers;
+  bool isOverviewDateWiseLoading = false;
   List<SampleCollectionHistoryOutput>? overviewDateWiseList;
+
+  bool isOverviewDetailLoading = false;
+  List<SampleCollectionHistoryDetailOutput>? overviewCollectedDetailList;
+  List<SampleCollectionHistoryDetailOutput>? overviewSubmittedDetailList;
+  List<SampleCollectionHistoryDetailOutput>? overviewAcceptedDetailList;
 
   StartRouteSampleCollection? startRouteSampleCollectionModel;
 
@@ -146,156 +160,195 @@ class SampleCollectionController extends GetxController {
 
   getSampleCollectionHistory(
       String userId, String fromDate, String toDate) async {
-    // TODO: replace with real API call when backend endpoint is ready
-    historyList = [
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-05-12',
-        dayName: 'Monday',
-        collectedCount: 120,
-        submittedCount: 118,
-        acceptedCount: 115,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-05-13',
-        dayName: 'Tuesday',
-        collectedCount: 60,
-        submittedCount: 55,
-        acceptedCount: 52,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-05-14',
-        dayName: 'Wednesday',
-        collectedCount: 40,
-        submittedCount: 36,
-        acceptedCount: 32,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-05-15',
-        dayName: 'Thursday',
-        collectedCount: 110,
-        submittedCount: 104,
-        acceptedCount: 100,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-05-16',
-        dayName: 'Friday',
-        collectedCount: 56,
-        submittedCount: 55,
-        acceptedCount: 55,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-05-17',
-        dayName: 'Saturday',
-        collectedCount: 34,
-        submittedCount: 32,
-        acceptedCount: 30,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-05-18',
-        dayName: 'Sunday',
-        collectedCount: 45,
-        submittedCount: 44,
-        acceptedCount: 44,
-      ),
-    ];
+    isHistoryLoading = true;
     update();
+
+    try {
+      final uri = Uri.parse(
+          "${ApiConstants.baseUrl1}${ApiConstants.sampleCollectionHistoryRunnerBoy}"
+          "?UserID=$userId&FromDate=$fromDate&ToDate=$toDate&DetailtType=1&SampleType=1");
+
+      debugPrint(uri.path);
+
+      final response = await ioClient.get(uri);
+      debugPrint(response.statusCode.toString());
+      debugPrint("response.body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'Success') {
+          historyList =
+              SampleCollectionHistoryModel.fromJson(data).output;
+        } else {
+          historyList = null;
+        }
+      } else {
+        historyList = null;
+      }
+    } finally {
+      isHistoryLoading = false;
+      update();
+    }
   }
 
-  getOverviewData(String userId, String fromDate, String toDate) async {
-    // TODO: replace with real API call when backend endpoint is ready
-    overviewMembers = [
-      SampleCollectionOverviewMember(
-        name: 'Arjun Patil',
-        zone: 'North Zone',
-        empCode: 'EMP001',
-        collectedCount: 20,
-        submittedCount: 18,
-        acceptedCount: 18,
-      ),
-      SampleCollectionOverviewMember(
-        name: 'Ravi Shinde',
-        zone: 'South Zone',
-        empCode: 'EMP002',
-        collectedCount: 34,
-        submittedCount: 34,
-        acceptedCount: 32,
-      ),
-      SampleCollectionOverviewMember(
-        name: 'Suraj Kamble',
-        zone: 'East Zone',
-        empCode: 'EMP003',
-        collectedCount: 22,
-        submittedCount: 18,
-        acceptedCount: 18,
-      ),
-      SampleCollectionOverviewMember(
-        name: 'Vishal More',
-        zone: 'West Zone',
-        empCode: 'EMP004',
-        collectedCount: 27,
-        submittedCount: 25,
-        acceptedCount: 24,
-      ),
-      SampleCollectionOverviewMember(
-        name: 'Pavan Jadhav',
-        zone: 'Central Zone',
-        empCode: 'EMP005',
-        collectedCount: 23,
-        submittedCount: 23,
-        acceptedCount: 23,
-      ),
-    ];
-    update();
+  Future<List<SampleCollectionHistoryDetailOutput>?>
+      _fetchSampleCollectionHistoryDetail(
+    String userId,
+    String date,
+    String sampleType,
+  ) async {
+    final uri = Uri.parse(
+        "${ApiConstants.baseUrl1}${ApiConstants.sampleCollectionHistoryRunnerBoy}"
+        "?UserID=$userId&FromDate=$date&ToDate=$date&DetailtType=2&SampleType=$sampleType");
+
+    debugPrint(uri.path);
+
+    final response = await ioClient.get(uri);
+    debugPrint(response.statusCode.toString());
+    debugPrint("response.body : ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['status'] == 'Success') {
+        return SampleCollectionHistoryDetailModel.fromJson(data).output;
+      }
+    }
+    return null;
   }
 
-  getOverviewDateWiseData(
-      String empCode, String fromDate, String toDate) async {
-    // TODO: replace with real API call when backend endpoint is ready
-    overviewDateWiseList = [
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-06-01',
-        dayName: 'Monday',
-        collectedCount: 4,
-        submittedCount: 4,
-        acceptedCount: 4,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-06-02',
-        dayName: 'Tuesday',
-        collectedCount: 3,
-        submittedCount: 3,
-        acceptedCount: 3,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-06-03',
-        dayName: 'Wednesday',
-        collectedCount: 2,
-        submittedCount: 2,
-        acceptedCount: 2,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-06-04',
-        dayName: 'Thursday',
-        collectedCount: 5,
-        submittedCount: 4,
-        acceptedCount: 4,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-06-05',
-        dayName: 'Friday',
-        collectedCount: 3,
-        submittedCount: 3,
-        acceptedCount: 3,
-      ),
-      SampleCollectionHistoryOutput(
-        collectionDate: '2026-06-06',
-        dayName: 'Saturday',
-        collectedCount: 3,
-        submittedCount: 2,
-        acceptedCount: 2,
-      ),
-    ];
+  Future<void> getSampleCollectionHistoryDetails(
+      String userId, String date) async {
+    isHistoryDetailLoading = true;
     update();
+
+    try {
+      final results = await Future.wait([
+        _fetchSampleCollectionHistoryDetail(userId, date, '1'),
+        _fetchSampleCollectionHistoryDetail(userId, date, '2'),
+        _fetchSampleCollectionHistoryDetail(userId, date, '3'),
+      ]);
+      collectedDetailList = results[0];
+      submittedDetailList = results[1];
+      acceptedDetailList = results[2];
+    } finally {
+      isHistoryDetailLoading = false;
+      update();
+    }
+  }
+
+  Future<void> getOverviewData(
+      String userId, String fromDate, String toDate) async {
+    isOverviewLoading = true;
+    update();
+
+    try {
+      final uri = Uri.parse(
+          "${ApiConstants.baseUrl1}${ApiConstants.sampleCollectionHistoryManager}"
+          "?UserID=$userId&RunnerBoyUserID=0&FromDate=$fromDate&ToDate=$toDate"
+          "&DetailtType=1&SampleType=1");
+
+      debugPrint(uri.path);
+
+      final response = await ioClient.get(uri);
+      debugPrint(response.statusCode.toString());
+      debugPrint("response.body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'Success') {
+          overviewMembers =
+              SampleCollectionOverviewModel.fromJson(data).members;
+        } else {
+          overviewMembers = null;
+        }
+      } else {
+        overviewMembers = null;
+      }
+    } finally {
+      isOverviewLoading = false;
+      update();
+    }
+  }
+
+  Future<void> getOverviewDateWiseData(String userId, String runnerBoyUserId,
+      String fromDate, String toDate) async {
+    isOverviewDateWiseLoading = true;
+    update();
+
+    try {
+      final uri = Uri.parse(
+          "${ApiConstants.baseUrl1}${ApiConstants.sampleCollectionHistoryManager}"
+          "?UserID=$userId&RunnerBoyUserID=$runnerBoyUserId&FromDate=$fromDate"
+          "&ToDate=$toDate&DetailtType=2&SampleType=1");
+
+      debugPrint(uri.path);
+
+      final response = await ioClient.get(uri);
+      debugPrint(response.statusCode.toString());
+      debugPrint("response.body : ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'Success') {
+          overviewDateWiseList =
+              SampleCollectionHistoryModel.fromJson(data).output;
+        } else {
+          overviewDateWiseList = null;
+        }
+      } else {
+        overviewDateWiseList = null;
+      }
+    } finally {
+      isOverviewDateWiseLoading = false;
+      update();
+    }
+  }
+
+  Future<List<SampleCollectionHistoryDetailOutput>?>
+      _fetchOverviewSampleDetail(
+    String userId,
+    String runnerBoyUserId,
+    String date,
+    String sampleType,
+  ) async {
+    final uri = Uri.parse(
+        "${ApiConstants.baseUrl1}${ApiConstants.sampleCollectionHistoryManager}"
+        "?UserID=$userId&RunnerBoyUserID=$runnerBoyUserId&FromDate=$date"
+        "&ToDate=$date&DetailtType=3&SampleType=$sampleType");
+
+    debugPrint(uri.path);
+
+    final response = await ioClient.get(uri);
+    debugPrint(response.statusCode.toString());
+    debugPrint("response.body : ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['status'] == 'Success') {
+        return SampleCollectionHistoryDetailModel.fromJson(data).output;
+      }
+    }
+    return null;
+  }
+
+  Future<void> getOverviewSampleDetails(
+      String userId, String runnerBoyUserId, String date) async {
+    isOverviewDetailLoading = true;
+    update();
+
+    try {
+      final results = await Future.wait([
+        _fetchOverviewSampleDetail(userId, runnerBoyUserId, date, '1'),
+        _fetchOverviewSampleDetail(userId, runnerBoyUserId, date, '2'),
+        _fetchOverviewSampleDetail(userId, runnerBoyUserId, date, '3'),
+      ]);
+      overviewCollectedDetailList = results[0];
+      overviewSubmittedDetailList = results[1];
+      overviewAcceptedDetailList = results[2];
+    } finally {
+      isOverviewDetailLoading = false;
+      update();
+    }
   }
 
   submitToLab(String locId, String userId, String labCode,

@@ -3,6 +3,7 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
 import 'package:marketingapp/runnerboy/screen/sample_collection_overview_details_screen.dart';
@@ -24,7 +25,7 @@ class SampleCollectionOverviewScreen extends StatefulWidget {
 class _SampleCollectionOverviewScreenState
     extends State<SampleCollectionOverviewScreen> {
   final SampleCollectionController controller =
-      Get.find<SampleCollectionController>();
+      Get.put(SampleCollectionController());
 
   final DateTime today = DateTime(
     DateTime.now().year,
@@ -40,7 +41,7 @@ class _SampleCollectionOverviewScreenState
   @override
   void initState() {
     super.initState();
-    fromDate = DateTime(today.year, today.month, 1);
+    fromDate = today;
     toDate = today;
     fromDateController = TextEditingController(text: _formatDisplay(fromDate));
     toDateController = TextEditingController(text: _formatDisplay(toDate));
@@ -56,6 +57,26 @@ class _SampleCollectionOverviewScreenState
 
   String _formatDisplay(DateTime d) => DateFormat('dd MMM yyyy').format(d);
 
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      itemCount: 6,
+      itemBuilder: (context, index) => Shimmer(
+        colorOpacity: 0.6,
+        duration: const Duration(seconds: 2),
+        direction: const ShimmerDirection.fromLeftToRight(),
+        child: Container(
+          height: 78.h,
+          margin: EdgeInsets.only(bottom: 10.h),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _loadData() async {
     await controller.getOverviewData(
       widget.empCode,
@@ -65,7 +86,7 @@ class _SampleCollectionOverviewScreenState
   }
 
   Future<void> _pickDate(bool isFrom) async {
-    final firstDate = isFrom ? DateTime(today.year, today.month, 1) : today;
+    final firstDate = today.subtract(const Duration(days: 29));
     final picked = await showDatePicker(
       context: context,
       initialDate: isFrom ? fromDate : toDate,
@@ -218,6 +239,7 @@ class _SampleCollectionOverviewScreenState
             child: GetBuilder<SampleCollectionController>(
               init: controller,
               builder: (ctrl) {
+                if (ctrl.isOverviewLoading) return _buildSkeletonList();
                 final members = ctrl.overviewMembers;
                 if (members == null || members.isEmpty) {
                   return const DataNotFound();
@@ -326,15 +348,15 @@ class _SummaryCard extends StatelessWidget {
                         textAlign: TextAlign.start,
                         fontFam: 'Nunito Sans',
                       ),
-                      SizedBox(height: 4.h),
-                      CustomText(
-                        text: subtitle,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.normal,
-                        textColor: AppColor.textGrey,
-                        textAlign: TextAlign.start,
-                        fontFam: 'Nunito Sans',
-                      ),
+                      // SizedBox(height: 4.h),
+                      // CustomText(
+                      //   text: subtitle,
+                      //   fontSize: 10.sp,
+                      //   fontWeight: FontWeight.normal,
+                      //   textColor: AppColor.textGrey,
+                      //   textAlign: TextAlign.start,
+                      //   fontFam: 'Nunito Sans',
+                      // ),
                     ],
                   ),
                 ),
@@ -410,27 +432,13 @@ class _MemberCard extends StatelessWidget {
               // Name + zone
               Expanded(
                 flex: 2,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      text: member.name ?? '',
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      textColor: AppColor.black,
-                      textAlign: TextAlign.start,
-                      fontFam: 'Nunito Sans',
-                    ),
-                    SizedBox(height: 3.h),
-                    CustomText(
-                      text: member.zone ?? '',
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.normal,
-                      textColor: AppColor.textGrey,
-                      textAlign: TextAlign.start,
-                      fontFam: 'Nunito Sans',
-                    ),
-                  ],
+                child: CustomText(
+                  text: member.name ?? '',
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.bold,
+                  textColor: AppColor.black,
+                  textAlign: TextAlign.start,
+                  fontFam: 'Nunito Sans',
                 ),
               ),
               // 3 stat boxes

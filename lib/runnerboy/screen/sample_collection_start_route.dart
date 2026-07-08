@@ -87,6 +87,7 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
 
   getUserData() async {
     userData = await SharedPref().read(const SharedPrefConstant().kUserData);
+    if (mounted) setState(() {});
 
     // collectSampleController.isRouteStartedInitially =
     //     await SampleCollectionController.shouldShowStartRouteButton();
@@ -173,7 +174,7 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
           fontFam: 'Nunito Sans',
         ),
         actions: [
-          InkWell(
+        if(userData?['output']?[0]?['Designation'] == 'Runner Boy')  InkWell(
             onTap: () {
               Get.to(() => SampleCollectionHistoryScreen(
                     empCode:
@@ -219,37 +220,6 @@ class _SampleCollectionStartRouteState extends State<SampleCollectionStartRoute>
                     textAlign: TextAlign.start),
               ),
             ).paddingOnly(right: 6),
-          // if (tabController.index == 0)
-          //   SizedBox(
-          //     height: 36.h,
-          //     child: CustomButton(
-          //         buttonText: "Collect Sample",
-          //         path: 'assets/arrow_nav.svg',
-          //         callB: () {
-          //           // if (collectSampleController.showStartRoute  &&
-          //           //     collectSampleController
-          //           //         .startRouteSampleCollectionModel?.status !=
-          //           //         'Success')
-          //
-          //           if (collectSampleController.showStartRoute) {
-          //             CustomPopup.takeConfirmationDialog(() {
-          //               Get.back();
-          //             }, () async {
-          //               Get.back();
-          //             },
-          //                 "It is mandatory to 'Start Route' from starting point before sample collection",
-          //                 'assets/destination.png', "Ok", 160.w);
-          //           } else {
-          //             Get.to(const SampleCollectionDistrict());
-          //           }
-          //         },
-          //         buttonWidth: 140.w,
-          //         primColor: AppColor.primaryBackgroundColor,
-          //         secColor: AppColor.secondaryColor,
-          //         textColor: AppColor.white,
-          //         iconColor: AppColor.white,
-          //         buttonFontSize: 12.sp),
-          //   ).paddingOnly(right: 6.w),
 
           // InkWell(
           //   onTap: () {

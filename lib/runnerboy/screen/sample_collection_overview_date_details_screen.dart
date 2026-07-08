@@ -3,6 +3,9 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
+import 'package:marketingapp/runnerboy/model/sample_collection_history_detail_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
 import 'package:marketingapp/utils/color_constants.dart';
@@ -12,11 +15,13 @@ import 'package:marketingapp/widgets/custom_text.dart';
 class SampleCollectionOverviewDateDetailsScreen extends StatefulWidget {
   final SampleCollectionHistoryOutput item;
   final SampleCollectionOverviewMember member;
+  final String empCode;
 
   const SampleCollectionOverviewDateDetailsScreen({
     super.key,
     required this.item,
     required this.member,
+    required this.empCode,
   });
 
   @override
@@ -29,20 +34,8 @@ class _SampleCollectionOverviewDateDetailsScreenState
     with TickerProviderStateMixin {
   late final TabController tabController;
 
-  final List<_SampleDetail> collectedList = const [
-    _SampleDetail(client: 'Dr. Manoj Deshmukh', tube: '0', trf: '0', temperature: '2°C to 8°C', time: '11:48 am', amount: '580.00'),
-    _SampleDetail(client: 'Mrs. Anjali Kapoor', tube: '1', trf: '2', temperature: '25°C to 75°C', time: '9:30 am', amount: '720.00'),
-    _SampleDetail(client: 'Mr. Rajesh Iyer', tube: '2', trf: '1', temperature: '22°C to 78°C', time: '2:15 pm', amount: '640.00'),
-  ];
-
-  final List<_SampleDetail> submittedList = const [
-    _SampleDetail(client: 'Dr. Ravi Kumar', tube: '1', trf: '1', temperature: '2°C to 8°C', time: '10:00 am', amount: '450.00'),
-    _SampleDetail(client: 'Mrs. Sunita Patil', tube: '2', trf: '2', temperature: '15°C to 30°C', time: '12:30 pm', amount: '620.00'),
-  ];
-
-  final List<_SampleDetail> acceptedList = const [
-    _SampleDetail(client: 'Dr. Ravi Kumar', tube: '1', trf: '1', temperature: '2°C to 8°C', time: '10:00 am', amount: '450.00'),
-  ];
+  final SampleCollectionController controller =
+      Get.find<SampleCollectionController>();
 
   @override
   void initState() {
@@ -51,7 +44,10 @@ class _SampleCollectionOverviewDateDetailsScreenState
     tabController.addListener(() {
       if (mounted) setState(() {});
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetails());
   }
+
+
 
   @override
   void dispose() {
@@ -59,30 +55,6 @@ class _SampleCollectionOverviewDateDetailsScreenState
     super.dispose();
   }
 
-  String _ordinalSuffix(int day) {
-    if (day >= 11 && day <= 13) return 'th';
-    switch (day % 10) {
-      case 1: return 'st';
-      case 2: return 'nd';
-      case 3: return 'rd';
-      default: return 'th';
-    }
-  }
-
-  DateTime? _parseDate(String? dateStr) {
-    if (dateStr == null) return null;
-    try {
-      return DateFormat('yyyy-MM-dd').parse(dateStr);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static final _tabColors = [
-    AppColor.orange,
-    const Color(0xFF3F51B5),
-    AppColor.green,
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +62,10 @@ class _SampleCollectionOverviewDateDetailsScreenState
     final day = date?.day ?? 0;
     final suffix = _ordinalSuffix(day);
     final monthYear = date != null ? DateFormat('MMM yyyy').format(date) : '';
-    final dayName = widget.item.dayName ??
+    final dayNameFull = widget.item.dayName ??
         (date != null ? DateFormat('EEEE').format(date) : '');
+    final dayName =
+        dayNameFull.length > 3 ? dayNameFull.substring(0, 3) : dayNameFull;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -277,19 +251,63 @@ class _SampleCollectionOverviewDateDetailsScreenState
           ),
           // List
           Expanded(
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                _buildList(collectedList, _tabColors[0]),
-                _buildList(submittedList, _tabColors[1]),
-                _buildList(acceptedList, _tabColors[2]),
-              ],
+            child: GetBuilder<SampleCollectionController>(
+              init: controller,
+              builder: (ctrl) {
+                if (ctrl.isOverviewDetailLoading) return _buildSkeletonList();
+                return TabBarView(
+                  controller: tabController,
+                  children: [
+                    _buildList(ctrl.overviewCollectedDetailList, _tabColors[0]),
+                    _buildList(ctrl.overviewSubmittedDetailList, _tabColors[1]),
+                    _buildList(ctrl.overviewAcceptedDetailList, _tabColors[2]),
+                  ],
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+
+
+  Future<void> _loadDetails() async {
+    final date = _parseDate(widget.item.collectionDate);
+    final dateParam = date != null
+        ? DateFormat('yyyy-MM-dd').format(date)
+        : (widget.item.collectionDate ?? '');
+    await controller.getOverviewSampleDetails(
+      widget.empCode,
+      widget.member.empCode ?? '',
+      dateParam,
+    );
+  }
+  String _ordinalSuffix(int day) {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  }
+
+  DateTime? _parseDate(String? dateStr) {
+    if (dateStr == null) return null;
+    try {
+      return DateFormat('dd MMM yyyy').parse(dateStr);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static final _tabColors = [
+    AppColor.orange,
+    const Color(0xFF3F51B5),
+    AppColor.green,
+  ];
+
 
   Widget _buildTab(int index, String text) {
     final isSelected = tabController.index == index;
@@ -331,8 +349,9 @@ class _SampleCollectionOverviewDateDetailsScreenState
     return BorderRadius.zero;
   }
 
-  Widget _buildList(List<_SampleDetail> list, Color color) {
-    if (list.isEmpty) return const DataNotFound();
+  Widget _buildList(
+      List<SampleCollectionHistoryDetailOutput>? list, Color color) {
+    if (list == null || list.isEmpty) return const DataNotFound();
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       itemCount: list.length,
@@ -340,32 +359,32 @@ class _SampleCollectionOverviewDateDetailsScreenState
           _DetailCard(item: list[index], color: color),
     );
   }
-}
 
-// ── Data holder ───────────────────────────────────────────────────────────────
-
-class _SampleDetail {
-  final String client;
-  final String tube;
-  final String trf;
-  final String temperature;
-  final String time;
-  final String amount;
-
-  const _SampleDetail({
-    required this.client,
-    required this.tube,
-    required this.trf,
-    required this.temperature,
-    required this.time,
-    required this.amount,
-  });
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      itemCount: 6,
+      itemBuilder: (context, index) => Shimmer(
+        colorOpacity: 0.6,
+        duration: const Duration(seconds: 2),
+        direction: const ShimmerDirection.fromLeftToRight(),
+        child: Container(
+          height: 90.h,
+          margin: EdgeInsets.only(bottom: 10.h),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // ── Detail card ───────────────────────────────────────────────────────────────
 
 class _DetailCard extends StatelessWidget {
-  final _SampleDetail item;
+  final SampleCollectionHistoryDetailOutput item;
   final Color color;
 
   const _DetailCard({required this.item, required this.color});
@@ -385,23 +404,24 @@ class _DetailCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Flexible(child: _labelValue('Client', item.client)),
+              Flexible(child: _labelValue('Client', item.client ?? '')),
               SizedBox(width: 10.w),
-              _labelValue('Tube', item.tube),
+              _labelValue('Tube', item.tube ?? ''),
               SizedBox(width: 10.w),
-              _labelValue("TRF's", item.trf),
+              _labelValue("TRF's", item.trf ?? ''),
             ],
           ),
           SizedBox(height: 6.h),
           Row(
             children: [
-              Flexible(child: _labelValue('Temperature', item.temperature)),
+              Flexible(
+                  child: _labelValue('Temperature', item.temperature ?? '')),
               SizedBox(width: 10.w),
-              _labelValue('Time', item.time),
+              _labelValue('Time', item.time ?? ''),
             ],
           ),
           SizedBox(height: 6.h),
-          _labelValue('Amount', item.amount),
+          _labelValue('Amount', (item.amount ?? 0).toStringAsFixed(2)),
         ],
       ),
     );

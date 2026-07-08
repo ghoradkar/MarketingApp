@@ -99,6 +99,10 @@ class ApiConstants {
   static const String getBankDetailsList = "/GetBank";
   static const String sampleCollectionHistory =
       "/GetSampleCollectionHistoryDateWise";
+  static const String sampleCollectionHistoryRunnerBoy =
+      "/GetSampleCollectionHistory_RunnerBoy";
+  static const String sampleCollectionHistoryManager =
+      "/GetSampleCollectionHistory_Manager";
   static const String sampleCollectionOverview =
       "/GetSampleCollectionOverview";
   static const String sampleCollectionOverviewDateWise =

@@ -37,6 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Map<String, dynamic>? userData;
   String? designation;
   String? desig;
+  String? empCode;
   String? version;
   String? buildNumber;
 
@@ -135,7 +136,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: (desig == null || controller.isDashLoading)
                   ? _buildSkeletonBody()
                   : getWidgetBasedOnType(
-                      FlavorConfig.instance.name!, desig!),
+                      FlavorConfig.instance.name!, desig!,empCode!),
             ),
           ],
         );
@@ -317,7 +318,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return sliderImages;
   }
 
-  Widget getWidgetBasedOnType(String type, String designation) {
+  Widget getWidgetBasedOnType(String type, String designation,String empCode) {
     switch (type) {
       case 'PlusCare Operational':
         return PlusCareAndLifenityDash(
@@ -332,7 +333,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : 'My Visits',
               },
             );
-          },
+          }, empCode:empCode,
         );
 
       case 'Lifenity International':
@@ -351,7 +352,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : 'My Visits',
               },
             );
-          },
+          }, empCode: empCode,
         );
       // return HindLabDash(
       //   designation: designation,
@@ -381,7 +382,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : 'My Visits',
               },
             );
-          },
+          }, empCode: empCode,
         );
 
       case 'HindLab Operational':
@@ -397,7 +398,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : 'My Visits',
               },
             );
-          },
+          }, empCode: empCode,
         );
 
       // return HindLabDash(
@@ -556,6 +557,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       if (output is List && output.isNotEmpty) {
         desig = output[0]['Designation'];
+        empCode = output[0]['EmpCode'].toString();
         debugPrint("User designation: $desig");
       } else {
         debugPrint("No user data found in output");

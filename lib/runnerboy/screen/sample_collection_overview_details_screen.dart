@@ -3,6 +3,7 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_overview_model.dart';
@@ -58,9 +59,30 @@ class _SampleCollectionOverviewDetailsScreenState
 
   String _formatDisplay(DateTime d) => DateFormat('dd MMM yyyy').format(d);
 
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+      itemCount: 6,
+      itemBuilder: (context, index) => Shimmer(
+        colorOpacity: 0.6,
+        duration: const Duration(seconds: 2),
+        direction: const ShimmerDirection.fromLeftToRight(),
+        child: Container(
+          height: 78.h,
+          margin: EdgeInsets.only(bottom: 10.h),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _loadData() async {
     await controller.getOverviewDateWiseData(
-      widget.member.empCode ?? widget.empCode,
+      widget.empCode,
+      widget.member.empCode ?? '',
       DateFormat('yyyy-MM-dd').format(widget.fromDate),
       DateFormat('yyyy-MM-dd').format(widget.toDate),
     );
@@ -102,71 +124,71 @@ class _SampleCollectionOverviewDetailsScreenState
       body: Column(
         children: [
           // Date filter (read-only display)
-          Container(
-            padding:
-                EdgeInsets.only(top: 4, bottom: 12, right: 10, left: 10),
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withValues(alpha: 0.2),
-                  spreadRadius: 2,
-                  blurRadius: 6,
-                  offset: const Offset(0, 0),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    labelText: 'From Date',
-                    hintText: 'Select date',
-                    isRequired: false,
-                    keyBoardType: TextInputType.none,
-                    fillColor: AppColor.white,
-                    isReadOnly: true,
-                    txtController: fromDateController,
-                    fontSize: 13.sp,
-                    autofocus: false,
-                    prefixIcon: Center(
-                      widthFactor: 1,
-                      child: Image.asset(
-                        'assets/calendar-event.png',
-                        width: 22.w,
-                        height: 22.h,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: CustomTextField(
-                    labelText: 'To Date',
-                    hintText: 'Select date',
-                    isRequired: false,
-                    keyBoardType: TextInputType.none,
-                    fillColor: AppColor.white,
-                    isReadOnly: true,
-                    txtController: toDateController,
-                    fontSize: 13.sp,
-                    autofocus: false,
-                    prefixIcon: Center(
-                      widthFactor: 1,
-                      child: Image.asset(
-                        'assets/calendar-event.png',
-                        width: 22.w,
-                        height: 22.h,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ).paddingOnly(top: 12, bottom: 0, left: 10, right: 10),
+          // Container(
+          //   padding:
+          //       EdgeInsets.only(top: 4, bottom: 12, right: 10, left: 10),
+          //   decoration: BoxDecoration(
+          //     borderRadius: const BorderRadius.all(Radius.circular(10)),
+          //     color: Colors.white,
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: Colors.grey.withValues(alpha: 0.2),
+          //         spreadRadius: 2,
+          //         blurRadius: 6,
+          //         offset: const Offset(0, 0),
+          //       ),
+          //     ],
+          //   ),
+          //   child: Row(
+          //     children: [
+          //       Expanded(
+          //         child: CustomTextField(
+          //           labelText: 'From Date',
+          //           hintText: 'Select date',
+          //           isRequired: false,
+          //           keyBoardType: TextInputType.none,
+          //           fillColor: AppColor.white,
+          //           isReadOnly: true,
+          //           txtController: fromDateController,
+          //           fontSize: 13.sp,
+          //           autofocus: false,
+          //           prefixIcon: Center(
+          //             widthFactor: 1,
+          //             child: Image.asset(
+          //               'assets/calendar-event.png',
+          //               width: 22.w,
+          //               height: 22.h,
+          //               fit: BoxFit.contain,
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       SizedBox(width: 10.w),
+          //       Expanded(
+          //         child: CustomTextField(
+          //           labelText: 'To Date',
+          //           hintText: 'Select date',
+          //           isRequired: false,
+          //           keyBoardType: TextInputType.none,
+          //           fillColor: AppColor.white,
+          //           isReadOnly: true,
+          //           txtController: toDateController,
+          //           fontSize: 13.sp,
+          //           autofocus: false,
+          //           prefixIcon: Center(
+          //             widthFactor: 1,
+          //             child: Image.asset(
+          //               'assets/calendar-event.png',
+          //               width: 22.w,
+          //               height: 22.h,
+          //               fit: BoxFit.contain,
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ).paddingOnly(top: 12, bottom: 0, left: 10, right: 10),
           // Person summary card
           _PersonSummaryCard(member: widget.member),
           // Date-wise list
@@ -174,6 +196,7 @@ class _SampleCollectionOverviewDetailsScreenState
             child: GetBuilder<SampleCollectionController>(
               init: controller,
               builder: (ctrl) {
+                if (ctrl.isOverviewDateWiseLoading) return _buildSkeletonList();
                 final list = ctrl.overviewDateWiseList;
                 if (list == null || list.isEmpty) return const DataNotFound();
                 return ListView.builder(
@@ -183,6 +206,7 @@ class _SampleCollectionOverviewDetailsScreenState
                   itemBuilder: (ctx, i) => _DateWiseCard(
                     item: list[i],
                     member: widget.member,
+                    empCode: widget.empCode,
                   ),
                 );
               },
@@ -221,37 +245,32 @@ class _PersonSummaryCard extends StatelessWidget {
                   color: AppColor.primaryBackgroundColor,
                 ),
                 // Left tinted text section
-                Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 10.w, vertical: 14.h),
-                  color: AppColor.primaryBackgroundColor
-                      .withValues(alpha: 0.08),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomText(
-                        text: member.name ?? '',
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.bold,
-                        textColor: AppColor.black,
-                        textAlign: TextAlign.start,
-                        fontFam: 'Nunito Sans',
-                      ),
-                      SizedBox(height: 4.h),
-                      CustomText(
-                        text: member.zone ?? '',
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.normal,
-                        textColor: AppColor.textGrey,
-                        textAlign: TextAlign.start,
-                        fontFam: 'Nunito Sans',
-                      ),
-                    ],
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 10.w, vertical: 14.h),
+                    color: AppColor.primaryBackgroundColor
+                        .withValues(alpha: 0.08),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomText(
+                          text: member.name ?? '',
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.bold,
+                          textColor: AppColor.black,
+                          textAlign: TextAlign.start,
+                          fontFam: 'Nunito Sans',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 // 3 stat boxes
                 Expanded(
+                  flex: 5,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                         horizontal: 8.w, vertical: 8.h),
@@ -301,27 +320,14 @@ class _PersonSummaryCard extends StatelessWidget {
 class _DateWiseCard extends StatelessWidget {
   final SampleCollectionHistoryOutput item;
   final SampleCollectionOverviewMember member;
+  final String empCode;
 
-  const _DateWiseCard({required this.item, required this.member});
+  const _DateWiseCard({
+    required this.item,
+    required this.member,
+    required this.empCode,
+  });
 
-  DateTime? get _date {
-    if (item.collectionDate == null) return null;
-    try {
-      return DateFormat('yyyy-MM-dd').parse(item.collectionDate!);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  String _ordinalSuffix(int day) {
-    if (day >= 11 && day <= 13) return 'th';
-    switch (day % 10) {
-      case 1: return 'st';
-      case 2: return 'nd';
-      case 3: return 'rd';
-      default: return 'th';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -337,6 +343,7 @@ class _DateWiseCard extends StatelessWidget {
       onTap: () => Get.to(() => SampleCollectionOverviewDateDetailsScreen(
             item: item,
             member: member,
+            empCode: empCode,
           )),
       child: Card(
       margin: EdgeInsets.only(bottom: 10.h),
@@ -453,6 +460,26 @@ class _DateWiseCard extends StatelessWidget {
       ),
     ),
     );
+  }
+
+
+  DateTime? get _date {
+    if (item.collectionDate == null) return null;
+    try {
+      return DateFormat('dd MMM yyyy').parse(item.collectionDate!);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _ordinalSuffix(int day) {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
   }
 }
 

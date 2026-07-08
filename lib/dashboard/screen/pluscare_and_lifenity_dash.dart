@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:marketingapp/availability/screen/availability_screen.dart';
 import 'package:marketingapp/lab_accession/screen/receive_sample.dart';
 import 'package:marketingapp/login/controller/login_controller.dart';
+import 'package:marketingapp/runnerboy/screen/sample_collection_overview_screen.dart';
 import 'package:marketingapp/runnerboy/screen/sample_collection_start_route.dart';
 import 'package:marketingapp/sample_collection_tracking/screen/sample_collection_tracking.dart';
 import 'package:marketingapp/utils/color_constants.dart';
@@ -13,12 +14,14 @@ import 'package:marquee/marquee.dart';
 
 class PlusCareAndLifenityDash extends StatelessWidget {
   final String designation;
+  final String empCode;
   final Function? myVisitsCallB;
 
   const PlusCareAndLifenityDash({
     super.key,
     required this.designation,
     this.myVisitsCallB,
+    required this.empCode,
   });
 
   @override
@@ -149,8 +152,25 @@ class PlusCareAndLifenityDash extends StatelessWidget {
                     onTap: () => myVisitsCallB?.call(),
                   ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
                 ),
+                // Expanded(
+                //   child: SizedBox.shrink(),
+                // ),
                 Expanded(
-                  child: SizedBox.shrink(),
+                  child: DashCard(
+                    backGroundColorIcon: AppColor.secondaryColor,
+                    secondCountFontSize: 18.sp,
+                    secondCountTextFontSize: 14.sp,
+                    secondCount: '0',
+                    secondCountText: "Sample Collection History",
+                    iconPath: 'assets/addvisit.svg',
+                    cardHeight: 80.h,
+                    isLoading: isLoading,
+                    onTap: () => {
+                      Get.to(() => SampleCollectionOverviewScreen(
+                            empCode: empCode,
+                          ))
+                    },
+                  ).paddingSymmetric(vertical: 8.h, horizontal: 10.w),
                 ),
                 // Expanded(
                 //   child: DashCard(

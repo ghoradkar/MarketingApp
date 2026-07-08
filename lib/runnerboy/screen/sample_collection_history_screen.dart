@@ -3,6 +3,7 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/runnerboy/screen/sample_collection_history_details_screen.dart';
@@ -41,7 +42,7 @@ class _SampleCollectionHistoryScreenState
   @override
   void initState() {
     super.initState();
-    fromDate = DateTime(today.year, today.month, 1);
+    fromDate = today;
     toDate = today;
     fromDateController = TextEditingController(text: _formatDisplay(fromDate));
     toDateController = TextEditingController(text: _formatDisplay(toDate));
@@ -168,6 +169,7 @@ class _SampleCollectionHistoryScreenState
             child: GetBuilder<SampleCollectionController>(
               init: controller,
               builder: (ctrl) {
+                if (ctrl.isHistoryLoading) return _buildSkeletonList();
                 final list = ctrl.historyList;
                 if (list == null || list.isEmpty) return const DataNotFound();
                 return ListView.builder(
@@ -191,6 +193,26 @@ class _SampleCollectionHistoryScreenState
 
   String _formatDisplay(DateTime d) => DateFormat('dd MMM yyyy').format(d);
 
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      itemCount: 6,
+      itemBuilder: (context, index) => Shimmer(
+        colorOpacity: 0.6,
+        duration: const Duration(seconds: 2),
+        direction: const ShimmerDirection.fromLeftToRight(),
+        child: Container(
+          height: 78.h,
+          margin: EdgeInsets.only(bottom: 10.h),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _loadHistory() async {
     await controller.getSampleCollectionHistory(
       widget.empCode,
@@ -200,7 +222,7 @@ class _SampleCollectionHistoryScreenState
   }
 
   Future<void> _pickDate(bool isFrom) async {
-    final firstDate = isFrom ? DateTime(today.year, today.month, 1) : today;
+    final firstDate = today.subtract(const Duration(days: 29));
     final lastDate = today;
 
     final picked = await showDatePicker(
@@ -228,29 +250,6 @@ class _HistoryCard extends StatelessWidget {
   final String empCode;
 
   const _HistoryCard({required this.item, required this.empCode});
-
-  DateTime? get _date {
-    if (item.collectionDate == null) return null;
-    try {
-      return DateFormat('yyyy-MM-dd').parse(item.collectionDate!);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  String _ordinalSuffix(int day) {
-    if (day >= 11 && day <= 13) return 'th';
-    switch (day % 10) {
-      case 1:
-        return 'st';
-      case 2:
-        return 'nd';
-      case 3:
-        return 'rd';
-      default:
-        return 'th';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -385,6 +384,29 @@ class _HistoryCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  DateTime? get _date {
+    if (item.collectionDate == null) return null;
+    try {
+      return DateFormat('dd MMM yyyy').parse(item.collectionDate!);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _ordinalSuffix(int day) {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
   }
 }
 

@@ -3,6 +3,9 @@ import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:marketingapp/runnerboy/controller/sample_collection_controller.dart';
+import 'package:marketingapp/runnerboy/model/sample_collection_history_detail_model.dart';
 import 'package:marketingapp/runnerboy/model/sample_collection_history_model.dart';
 import 'package:marketingapp/utils/color_constants.dart';
 import 'package:marketingapp/utils/data_not_found.dart';
@@ -28,26 +31,8 @@ class _SampleCollectionHistoryDetailsScreenState
     with TickerProviderStateMixin {
   late final TabController tabController;
 
-  final List<_SampleDetail> collectedList = const [
-    _SampleDetail(client: 'Dr. Manoj Deshmukh', tube: '0', trf: '0', temperature: '2°C to 8°C', time: '11:48 am', amount: '580.00'),
-    _SampleDetail(client: 'Dr. Manoj Deshmukh', tube: '0', trf: '0', temperature: '2°C to 8°C', time: '11:48 am', amount: '580.00'),
-    _SampleDetail(client: 'Mrs. Anjali Kapoor', tube: '1', trf: '2', temperature: '25°C to 75°C', time: '9:30 am', amount: '720.00'),
-    _SampleDetail(client: 'Mr. Rajesh Iyer', tube: '2', trf: '1', temperature: '22°C to 78°C', time: '2:15 pm', amount: '640.00'),
-    _SampleDetail(client: 'Ms. Priya Singh', tube: '3', trf: '3', temperature: '18°C to 82°C', time: '5:45 pm', amount: '900.00'),
-  ];
-
-  final List<_SampleDetail> submittedList = const [
-    _SampleDetail(client: 'Dr. Ravi Kumar', tube: '1', trf: '1', temperature: '2°C to 8°C', time: '10:00 am', amount: '450.00'),
-    _SampleDetail(client: 'Mrs. Sunita Patil', tube: '2', trf: '2', temperature: '15°C to 30°C', time: '12:30 pm', amount: '620.00'),
-    _SampleDetail(client: 'Mr. Anil Sharma', tube: '1', trf: '1', temperature: '25°C to 75°C', time: '3:00 pm', amount: '380.00'),
-    _SampleDetail(client: 'Dr. Priya Mehta', tube: '3', trf: '2', temperature: '2°C to 8°C', time: '4:15 pm', amount: '810.00'),
-  ];
-
-  final List<_SampleDetail> acceptedList = const [
-    _SampleDetail(client: 'Dr. Ravi Kumar', tube: '1', trf: '1', temperature: '2°C to 8°C', time: '10:00 am', amount: '450.00'),
-    _SampleDetail(client: 'Mrs. Sunita Patil', tube: '2', trf: '2', temperature: '15°C to 30°C', time: '12:30 pm', amount: '620.00'),
-    _SampleDetail(client: 'Mr. Anil Sharma', tube: '1', trf: '1', temperature: '25°C to 75°C', time: '3:00 pm', amount: '380.00'),
-  ];
+  final SampleCollectionController controller =
+      Get.find<SampleCollectionController>();
 
   @override
   void initState() {
@@ -56,6 +41,18 @@ class _SampleCollectionHistoryDetailsScreenState
     tabController.addListener(() {
       if (mounted) setState(() {});
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetails());
+  }
+
+  Future<void> _loadDetails() async {
+    final date = _parseDate(widget.item.collectionDate);
+    final dateParam = date != null
+        ? DateFormat('yyyy-MM-dd').format(date)
+        : (widget.item.collectionDate ?? '');
+    await controller.getSampleCollectionHistoryDetails(
+      widget.empCode,
+      dateParam,
+    );
   }
 
   @override
@@ -81,7 +78,7 @@ class _SampleCollectionHistoryDetailsScreenState
   DateTime? _parseDate(String? dateStr) {
     if (dateStr == null) return null;
     try {
-      return DateFormat('yyyy-MM-dd').parse(dateStr);
+      return DateFormat('dd MMM yyyy').parse(dateStr);
     } catch (_) {
       return null;
     }
@@ -264,13 +261,19 @@ class _SampleCollectionHistoryDetailsScreenState
           ),
           // List
           Expanded(
-            child: TabBarView(
-              controller: tabController,
-              children: [
-                _buildList(collectedList, _tabColors[0]),
-                _buildList(submittedList, _tabColors[1]),
-                _buildList(acceptedList, _tabColors[2]),
-              ],
+            child: GetBuilder<SampleCollectionController>(
+              init: controller,
+              builder: (ctrl) {
+                if (ctrl.isHistoryDetailLoading) return _buildSkeletonList();
+                return TabBarView(
+                  controller: tabController,
+                  children: [
+                    _buildList(ctrl.collectedDetailList, _tabColors[0]),
+                    _buildList(ctrl.submittedDetailList, _tabColors[1]),
+                    _buildList(ctrl.acceptedDetailList, _tabColors[2]),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -324,8 +327,9 @@ class _SampleCollectionHistoryDetailsScreenState
     return BorderRadius.zero;
   }
 
-  Widget _buildList(List<_SampleDetail> list, Color color) {
-    if (list.isEmpty) return const DataNotFound();
+  Widget _buildList(
+      List<SampleCollectionHistoryDetailOutput>? list, Color color) {
+    if (list == null || list.isEmpty) return const DataNotFound();
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 12.w),
       itemCount: list.length,
@@ -333,32 +337,32 @@ class _SampleCollectionHistoryDetailsScreenState
           _DetailCard(item: list[index], color: color),
     );
   }
-}
 
-// ── Data holder ──────────────────────────────────────────────────────────────
-
-class _SampleDetail {
-  final String client;
-  final String tube;
-  final String trf;
-  final String temperature;
-  final String time;
-  final String amount;
-
-  const _SampleDetail({
-    required this.client,
-    required this.tube,
-    required this.trf,
-    required this.temperature,
-    required this.time,
-    required this.amount,
-  });
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      itemCount: 6,
+      itemBuilder: (context, index) => Shimmer(
+        colorOpacity: 0.6,
+        duration: const Duration(seconds: 2),
+        direction: const ShimmerDirection.fromLeftToRight(),
+        child: Container(
+          height: 90.h,
+          margin: EdgeInsets.only(bottom: 10.h),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // ── Detail card ───────────────────────────────────────────────────────────────
 
 class _DetailCard extends StatelessWidget {
-  final _SampleDetail item;
+  final SampleCollectionHistoryDetailOutput item;
   final Color color;
 
   const _DetailCard({required this.item, required this.color});
@@ -379,24 +383,25 @@ class _DetailCard extends StatelessWidget {
           Row(
             children: [
               Flexible(
-                child: _labelValue('Client', item.client),
+                child: _labelValue('Client', item.client ?? ''),
               ),
               SizedBox(width: 10.w),
-              _labelValue('Tube', item.tube),
+              _labelValue('Tube', item.tube ?? ''),
               SizedBox(width: 10.w),
-              _labelValue("TRF's", item.trf),
+              _labelValue("TRF's", item.trf ?? ''),
             ],
           ),
           SizedBox(height: 6.h),
           Row(
             children: [
-              Flexible(child: _labelValue('Temperature', item.temperature)),
+              Flexible(
+                  child: _labelValue('Temperature', item.temperature ?? '')),
               SizedBox(width: 10.w),
-              _labelValue('Time', item.time),
+              _labelValue('Time', item.time ?? ''),
             ],
           ),
           SizedBox(height: 6.h),
-          _labelValue('Amount', item.amount),
+          _labelValue('Amount', (item.amount ?? 0).toStringAsFixed(2)),
         ],
       ),
     );

@@ -33,16 +33,16 @@ class SampleCollectionHistoryOutput {
   });
 
   SampleCollectionHistoryOutput.fromJson(dynamic json) {
-    collectionDate = json['CollectionDate'];
+    collectionDate = json['EntryDate'];
     dayName = json['DayName'];
-    collectedCount = json['CollectedCount'] is String
-        ? int.tryParse(json['CollectedCount'])
-        : json['CollectedCount'];
-    submittedCount = json['SubmittedCount'] is String
-        ? int.tryParse(json['SubmittedCount'])
-        : json['SubmittedCount'];
-    acceptedCount = json['AcceptedCount'] is String
-        ? int.tryParse(json['AcceptedCount'])
-        : json['AcceptedCount'];
+    collectedCount = json['SampleCollected'] is String
+        ? int.tryParse(json['SampleCollected'])
+        : json['SampleCollected'];
+    submittedCount = json['SampleSubmitted'] is String
+        ? int.tryParse(json['SampleSubmitted'])
+        : json['SampleSubmitted'];
+    acceptedCount = json['SampleAccepted'] is String
+        ? int.tryParse(json['SampleAccepted'])
+        : json['SampleAccepted'];
   }
 }
