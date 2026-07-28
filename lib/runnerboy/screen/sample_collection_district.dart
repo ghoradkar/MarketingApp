@@ -118,28 +118,7 @@ class _SampleCollectionDistrictState extends State<SampleCollectionDistrict> {
     setState(() {});
   }
 
-  // filterSearchResults(String query) {
-  //   if (query.isEmpty) {
-  //     sampleCollectionController.filteredCustomerList = List.from(
-  //         sampleCollectionController.getCenterIdAndAvailableFund!.output);
-  //     setState(() {});
-  //     return false;
-  //   } else {
-  //     sampleCollectionController.filteredCustomerList =
-  //         sampleCollectionController.getCenterIdAndAvailableFund!.output
-  //             .where((customer) => customer.customerTypeName
-  //                 .toLowerCase()
-  //                 .contains(query.toLowerCase()))
-  //             .toList();
-  //     setState(() {});
-  //
-  //     if (sampleCollectionController.filteredCustomerList.isNotEmpty) {
-  //       return false;
-  //     } else {
-  //       return false;
-  //     }
-  //   }
-  // }
+
 
   Widget _buildSkeletonList() {
     return ListView.builder(

@@ -42,6 +42,9 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
 
   var userData;
 
+  ///share below to shashank
+  Key _remarkFieldKey = UniqueKey();
+
   @override
   void initState() {
     tabController = TabController(length: 2, vsync: this);
@@ -78,6 +81,8 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
     receiveSampleCollection.update();
     receiveSampleCollection.pendingList?.clear();
     receiveSampleCollection.acceptedList?.clear();
+    ///share below to shashank
+    receiveSampleCollection.selectAll = false;
 
     if (receiveSampleCollection.hasInternet) {
       getUserData();
@@ -167,6 +172,8 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
                           controller.pendingList!.isNotEmpty &&
                           tabController.index == 0)
                         CustomTextField(
+                          ///share below to shashank
+                          key: _remarkFieldKey,
                           // shouldValidate: controller.shouldValidate,
                           autofocus: false,
                           txtController: controller.remark,
@@ -183,6 +190,7 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
                             color: AppColor.secondaryColor,
                           ),
                         ).paddingOnly(bottom: 10, left: 10, right: 10),
+
                       if (controller.pendingList != null &&
                           controller.pendingList!.isNotEmpty &&
                           tabController.index == 0)
@@ -219,6 +227,10 @@ class _AcceptPendingSampleState extends State<AcceptPendingSample>
                             CustomMessage.toast("Sample Accepted Successfully");
                             await c.getCollectedSampleList(
                                 widget.date, widget.userId, widget.labCode);
+                            ///share below to shashank
+                            setState(() {
+                              _remarkFieldKey = UniqueKey();
+                            });
                           },
                           // buttonWidth: double.infinity,
                           primColor: AppColor.primaryBackgroundColor,

@@ -46,7 +46,6 @@ android {
 //            keyAlias 'pluscareoperational'
 //            keyPassword 'Avante@123'
 //        }
-
         ///for pluscare op new
         ///use for csc aslo
         release {
@@ -55,16 +54,12 @@ android {
             keyAlias 'pluscareKey'
             keyPassword 'pluscarenew'
         }
-
-
 //        release {
 //            storeFile file('lifenity_international.jks')
 //            storePassword 'Avante@123'
 //            keyAlias 'key0'
 //            keyPassword 'Avante@123'
 //        }
-
-
     }
 
     buildTypes {
@@ -76,21 +71,17 @@ android {
     }
     flavorDimensions "app"
     productFlavors {
-
         // Lifenity Operational(India)
         lifenityOperational {
             dimension "app"
             versionCode 49
             versionName "5.2.0"
             applicationId "com.lifenity.operational"
-
             manifestPlaceholders = [
                     appIcon: "@mipmap/lifenity_operational",
                     appName: "@string/lifenityOperational"
             ]
         }
-
-
         // Lifenity International (UAE)
         lifenityInternational {
             dimension "app"
@@ -102,7 +93,6 @@ android {
                     appName: "@string/lifenityInternational"
             ]
         }
-
         // Plucare Operational Old
 //        pluscareOperational {
 //            dimension "app"

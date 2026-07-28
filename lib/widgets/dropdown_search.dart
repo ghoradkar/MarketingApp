@@ -35,12 +35,16 @@ class DropDownSearch extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding:  EdgeInsets.fromLTRB(0, 4.h, 8.w, 4.h),
+          padding: EdgeInsets.fromLTRB(0, 4.h, 8.w, 4.h),
           child: Row(
             children: [
-              Text(labelText, style:  TextStyle(fontSize: 14.sp)),
+              Text(labelText,
+                  style: TextStyle(
+                      fontSize: 16.sp,
+                      fontFamily: 'Nunito Sans',
+                      fontWeight: FontWeight.w400)),
               if (isRequired)
-                 Text(
+                Text(
                   ' *',
                   style: TextStyle(color: Colors.red, fontSize: 14.sp),
                 ),
@@ -53,6 +57,8 @@ class DropDownSearch extends StatelessWidget {
           items: (f, cs) => items,
           decoratorProps: DropDownDecoratorProps(
             decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
               prefixIcon: prefixIcon,
               filled: true,
               fillColor: filledColor,

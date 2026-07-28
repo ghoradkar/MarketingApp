@@ -193,10 +193,6 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
       return _buildErrorWidget();
     }
 
-    if (controller.isVisitLoading) {
-      return _buildSkeletonContent();
-    }
-
     if (userData == null) {
       return _buildNoDataWidget();
     }
@@ -279,6 +275,9 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
                     ),
                   ).paddingOnly(left: 10,right: 10),
                 ),
+                if (controller.isVisitLoading)
+                  _buildStatsSkeleton()
+                else ...[
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -587,6 +586,7 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
                     ),
                   ],
                 ),
+                ],
               ],
             ).paddingSymmetric(horizontal: 10),
           ),
@@ -682,7 +682,7 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
     );
   }
 
-  Widget _buildSkeletonContent() {
+  Widget _buildStatsSkeleton() {
     final cardColors = [
       const Color(0x80D5B3FF),
       const Color(0x80FFB3BA),
@@ -693,110 +693,37 @@ class _MyVisitsScreenState extends State<MyVisitsScreen> {
     ];
     return Column(
       children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Dropdown skeleton
-                Shimmer(
-                  colorOpacity: 0.6,
-                  duration: const Duration(seconds: 2),
-                  direction: const ShimmerDirection.fromLeftToRight(),
-                  child: Container(
-                    height: 56,
-                    margin: const EdgeInsets.only(top: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                  ).paddingOnly(left: 10,right: 10),
-                ),
-                // Monthly target card skeleton
-                Shimmer(
-                  colorOpacity: 0.6,
-                  duration: const Duration(seconds: 2),
-                  direction: const ShimmerDirection.fromLeftToRight(),
-                  child: Container(
-                    height: 72,
-                    margin: const EdgeInsets.only(
-                        top: 10, left: 8, right: 8, bottom: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                // Stat cards skeleton (3 rows of 2)
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: 3,
-                  itemBuilder: (_, row) => Row(
-                    children: [
-                      Expanded(
-                        child: _buildSkeletonStatCard(cardColors[row * 2])
-                            .paddingSymmetric(vertical: 8, horizontal: 10),
-                      ),
-                      Expanded(
-                        child: _buildSkeletonStatCard(cardColors[row * 2 + 1])
-                            .paddingSymmetric(vertical: 8, horizontal: 10),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ).paddingSymmetric(horizontal: 10),
+        // Monthly target card skeleton
+        Shimmer(
+          colorOpacity: 0.6,
+          duration: const Duration(seconds: 2),
+          direction: const ShimmerDirection.fromLeftToRight(),
+          child: Container(
+            height: 72,
+            margin:
+                const EdgeInsets.only(top: 10, left: 8, right: 8, bottom: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         ),
-        // Bottom bar skeleton
-        SafeArea(
-          bottom: true,
-          top: false,
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColor.primaryBackgroundColor.withValues(alpha: 0.8),
-                  AppColor.secondaryColor.withValues(alpha: 0.8),
-                ],
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
+        // Stat cards skeleton (3 rows of 2)
+        ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: 3,
+          itemBuilder: (_, row) => Row(
+            children: [
+              Expanded(
+                child: _buildSkeletonStatCard(cardColors[row * 2])
+                    .paddingSymmetric(vertical: 8, horizontal: 10),
               ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Shimmer(
-                  colorOpacity: 0.3,
-                  duration: const Duration(seconds: 2),
-                  direction: const ShimmerDirection.fromLeftToRight(),
-                  child: Container(
-                    width: 120,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                ),
-                Container(height: 40, width: 1.5, color: AppColor.white),
-                Shimmer(
-                  colorOpacity: 0.3,
-                  duration: const Duration(seconds: 2),
-                  direction: const ShimmerDirection.fromLeftToRight(),
-                  child: Container(
-                    width: 120,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              Expanded(
+                child: _buildSkeletonStatCard(cardColors[row * 2 + 1])
+                    .paddingSymmetric(vertical: 8, horizontal: 10),
+              ),
+            ],
           ),
         ),
       ],

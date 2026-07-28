@@ -16,6 +16,7 @@ import 'package:marketingapp/widgets/custom_popup.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:marketingapp/widgets/dropdown_search.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AddVisitStartRouteScreen extends StatefulWidget {
   static const routeName = '/add-visit-start';
@@ -35,7 +36,8 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
 
   bool isResultFound = false;
 
-  // bool isLoading = true;
+  bool isLoading = true;
+  bool isActionLoading = false;
   bool hasError = false;
 
   String? todayStr;
@@ -73,7 +75,7 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
 
   Future<void> _initializeScreen() async {
     setState(() {
-      // isLoading = true;
+      isLoading = true;
       hasError = false;
     });
 
@@ -88,12 +90,11 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
       setState(() {
         hasError = true;
       });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
-    // finally {
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    // }
   }
 
   Future<void> getUserData() async {
@@ -249,23 +250,50 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
                         }, () async {
                           Get.back();
 
-                          await addVisitController.startRoute(
-                              userData?['output'][0]['EmpCode'].toString(),
-                              "1",
-                              myVisitControllerController.latitude.toString(),
-                              myVisitControllerController.longitude.toString(),
-                              DateFormat('yyyy-MM-dd').format(DateTime.now()),
-                              userData!['output'][0]['EmpCode'].toString());
+                          setState(() => isActionLoading = true);
+                          try {
+                            await addVisitController.startRoute(
+                                userData?['output'][0]['EmpCode'].toString(),
+                                "1",
+                                myVisitControllerController.latitude
+                                    .toString(),
+                                myVisitControllerController.longitude
+                                    .toString(),
+                                DateFormat('yyyy-MM-dd')
+                                    .format(DateTime.now()),
+                                userData!['output'][0]['EmpCode'].toString());
+                          } finally {
+                            if (mounted) {
+                              setState(() => isActionLoading = false);
+                            }
+                          }
+
                           if (addVisitController.startRouteModel!.message ==
                               'Start Route Details Save  Successfully') {
                             CustomPopup.takeConfirmationDialog(() async {
                               Get.back();
-                              await addVisitController.getRouteFlag(
-                                  userData?['output'][0]['EmpCode'].toString());
+                              setState(() => isActionLoading = true);
+                              try {
+                                await addVisitController.getRouteFlag(
+                                    userData?['output'][0]['EmpCode']
+                                        .toString());
+                              } finally {
+                                if (mounted) {
+                                  setState(() => isActionLoading = false);
+                                }
+                              }
                             }, () async {
                               Get.back();
-                              await addVisitController.getRouteFlag(
-                                  userData?['output'][0]['EmpCode'].toString());
+                              setState(() => isActionLoading = true);
+                              try {
+                                await addVisitController.getRouteFlag(
+                                    userData?['output'][0]['EmpCode']
+                                        .toString());
+                              } finally {
+                                if (mounted) {
+                                  setState(() => isActionLoading = false);
+                                }
+                              }
                             },
                                 addVisitController.startRouteModel!.message ??
                                     "You can now start your journey\nfor add visit.",
@@ -296,11 +324,9 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
   }
 
   Widget _buildBody(AddVisitController controller) {
-    // if (isLoading) {
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
+    if (isLoading) {
+      return _buildSkeletonContent();
+    }
 
     if (hasError) {
       return _buildErrorWidget();
@@ -338,8 +364,14 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
                   DistrictOutput? selectedDistObj = myVisitControllerController
                       .districtRespModel?.output
                       ?.firstWhere((e) => e.distname == value);
-                  await controller
-                      .getCustomerList(selectedDistObj!.distlgdcode.toString());
+
+                  setState(() => isActionLoading = true);
+                  try {
+                    await controller.getCustomerList(
+                        selectedDistObj!.distlgdcode.toString());
+                  } finally {
+                    if (mounted) setState(() => isActionLoading = false);
+                  }
 
                   controller.update();
                 },
@@ -372,7 +404,9 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              if (controller.filteredCustomerList.isNotEmpty)
+              if (isActionLoading)
+                Expanded(child: _buildListSkeleton())
+              else if (controller.filteredCustomerList.isNotEmpty)
                 Expanded(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -453,6 +487,72 @@ class _AddVisitStartRouteScreenState extends State<AddVisitStartRouteScreen> {
           ).paddingSymmetric(vertical: 4, horizontal: 10),
         ),
       ],
+    );
+  }
+
+  Widget _buildSkeletonContent() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: Column(
+        children: [
+          _skeletonField(),
+          for (int i = 0; i < 6; i++)
+            _skeletonBox(
+              height: 56,
+              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+              radius: 12,
+            ),
+        ],
+      ).paddingSymmetric(vertical: 4, horizontal: 10),
+    );
+  }
+
+  Widget _buildListSkeleton() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: ListView.builder(
+        itemCount: 6,
+        itemBuilder: (context, index) => _skeletonBox(
+          height: 56,
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+          radius: 12,
+        ),
+      ),
+    );
+  }
+
+  Widget _skeletonField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _skeletonBox(
+              height: 14, width: 100, margin: const EdgeInsets.only(bottom: 8)),
+          _skeletonBox(height: 48),
+        ],
+      ),
+    );
+  }
+
+  Widget _skeletonBox({
+    required double height,
+    double? width,
+    EdgeInsets margin = EdgeInsets.zero,
+    double radius = 8,
+  }) {
+    return Container(
+      height: height,
+      width: width ?? double.infinity,
+      margin: margin,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(radius),
+      ),
     );
   }
 

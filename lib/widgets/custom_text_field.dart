@@ -108,14 +108,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
           inputFormatters: widget.inputFormatters,
           autofocus: widget.autofocus,
           decoration: InputDecoration(
-            contentPadding:  EdgeInsets.only(top: 14.h, bottom: 14.h, left: 8.w),
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
             fillColor: widget.fillColor,
             filled: true,
             hintText: widget.hintText,
             suffixIcon: widget.suffixIcon,
             prefixIcon: widget.prefixIcon,
             hintStyle: TextStyle(
-              fontSize: 12.sp,
+              fontSize: 14.sp,
               color: AppColor.textGrey,
               fontFamily: "Nunito Sans",
               fontWeight: FontWeight.normal,
@@ -262,7 +263,8 @@ class _NormalCustomTextFieldState extends State<NormalCustomTextField> {
             keyboardType: widget.keyBoardType,
             autofocus: widget.autofocus,
             decoration: InputDecoration(
-              contentPadding:  EdgeInsets.symmetric(vertical: 14.h),
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
               fillColor: widget.fillColor,
               filled: true,
               hintText: widget.hintText,
@@ -414,7 +416,8 @@ class _TubeCountCustomTextFieldState extends State<TubeCountCustomTextField> {
           inputFormatters: widget.inputFormatters,
           autofocus: widget.autofocus,
           decoration: InputDecoration(
-            contentPadding:  EdgeInsets.only(top: 14.h, bottom: 14.h, left: 8.w),
+            isDense: true,
+            contentPadding: EdgeInsets.only(top: 8.h, bottom: 8.h, left: 8.w),
             fillColor: widget.fillColor,
             filled: true,
             hintText: widget.hintText,

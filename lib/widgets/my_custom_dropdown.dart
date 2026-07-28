@@ -53,7 +53,7 @@ class _MyCustomDropdownState extends State<MyCustomDropdown> {
             children: [
               CustomText(
                 text: widget.labelText,
-                fontSize: 12.sp,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.normal,
                 textColor: AppColor.black,
                 textAlign: TextAlign.right,
@@ -87,7 +87,7 @@ class _MyCustomDropdownState extends State<MyCustomDropdown> {
             filled: true,
             fillColor: widget.filledColor,
             hintStyle: TextStyle(
-                fontSize: 12.sp,
+                fontSize: 14.sp,
                 color: AppColor.textGrey,
                 fontFamily: "Nunito Sans",
                 fontWeight: FontWeight.normal),
@@ -113,7 +113,7 @@ class _MyCustomDropdownState extends State<MyCustomDropdown> {
                       padding:  EdgeInsets.symmetric(vertical: 8.h),
                       child: CustomText(
                         text: 'Select ${widget.labelText}',
-                        fontSize: 12.sp,
+                        fontSize: 14.sp,
                         fontFam: 'Nunito Sans',
                         fontWeight: FontWeight.bold,
                         textColor: AppColor.black,
@@ -125,7 +125,7 @@ class _MyCustomDropdownState extends State<MyCustomDropdown> {
                       value: item,
                       child: CustomText(
                         text: item,
-                        fontSize: 12.sp,
+                        fontSize: 14.sp,
                         fontFam: 'Nunito Sans',
                         fontWeight: FontWeight.bold,
                         textColor: AppColor.black,

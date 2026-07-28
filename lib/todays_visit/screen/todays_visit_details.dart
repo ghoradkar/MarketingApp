@@ -704,9 +704,7 @@ class _CustDetailsScreenState extends State<CustDetailsScreen> {
 
   Widget _buildBody() {
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return _buildSkeletonContent();
     }
 
     if (hasError) {
@@ -963,6 +961,58 @@ class _CustDetailsScreenState extends State<CustDetailsScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSkeletonContent() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _skeletonBox(height: 60, margin: const EdgeInsets.symmetric(vertical: 8)),
+            for (int i = 0; i < 6; i++) _skeletonField(),
+            _skeletonField(),
+            _skeletonField(height: 90),
+            _skeletonField(),
+          ],
+        ).paddingSymmetric(vertical: 8, horizontal: 16),
+      ),
+    );
+  }
+
+  Widget _skeletonField({double height = 48}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _skeletonBox(
+              height: 14, width: 100, margin: const EdgeInsets.only(bottom: 8)),
+          _skeletonBox(height: height),
+        ],
+      ),
+    );
+  }
+
+  Widget _skeletonBox({
+    required double height,
+    double? width,
+    EdgeInsets margin = EdgeInsets.zero,
+    double radius = 8,
+  }) {
+    return Container(
+      height: height,
+      width: width ?? double.infinity,
+      margin: margin,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        borderRadius: BorderRadius.circular(radius),
+      ),
     );
   }
 

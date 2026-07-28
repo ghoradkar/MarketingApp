@@ -402,26 +402,42 @@ class _DetailCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Flexible(child: _labelValue('Client', item.client ?? '')),
-              SizedBox(width: 10.w),
-              _labelValue('Tube', item.tube ?? ''),
-              SizedBox(width: 10.w),
-              _labelValue("TRF's", item.trf ?? ''),
-            ],
-          ),
+          _labelValue('Client', item.client ?? ''),
+          // Row(
+          //   children: [
+          //     Flexible(child: _labelValue('Client', item.client ?? '')),
+          //     SizedBox(width: 10.w),
+          //     _labelValue('Tube', item.tube ?? ''),
+          //     SizedBox(width: 10.w),
+          //     _labelValue("TRF's", item.trf ?? ''),
+          //   ],
+          // ),
           SizedBox(height: 6.h),
+          // Row(children: [
+          //   Expanded(child: _labelValue('Tube', item.tube ?? '')),
+          //   SizedBox(width: 10.w),
+          //   ExcludeFocus(child: _labelValue("TRF's", item.trf ?? '')),
+          // ],),
+          // SizedBox(height: 6.h),
+
           Row(
             children: [
-              Flexible(
+              Expanded(
                   child: _labelValue('Temperature', item.temperature ?? '')),
               SizedBox(width: 10.w),
               _labelValue('Time', item.time ?? ''),
             ],
           ),
           SizedBox(height: 6.h),
-          _labelValue('Amount', (item.amount ?? 0).toStringAsFixed(2)),
+          Row(
+            children: [
+              Expanded(child: _labelValue('Amount', (item.amount ?? 0).toStringAsFixed(2))),
+              _labelValue('Tube', item.tube ?? ''),
+              SizedBox(width: 10.w),
+              _labelValue("TRF's", item.trf ?? ''),
+            ],
+          ),
+
         ],
       ),
     );

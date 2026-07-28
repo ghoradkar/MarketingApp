@@ -17,6 +17,7 @@ import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:marketingapp/widgets/dropdown_search.dart';
 import 'package:marketingapp/widgets/my_custom_dropdown.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AddClientScreen extends StatefulWidget {
   const AddClientScreen({super.key});
@@ -193,9 +194,7 @@ class _AddClientScreenState extends State<AddClientScreen>
 
   Widget _buildBody() {
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return _buildSkeletonContent();
     }
 
     if (hasError) {
@@ -710,6 +709,76 @@ class _AddClientScreenState extends State<AddClientScreen>
             //     textAlign: TextAlign.center),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSkeletonContent() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            _skeletonBox(height: 60, margin: const EdgeInsets.all(8)),
+            _skeletonBox(height: 60, margin: const EdgeInsets.all(8)),
+            for (int i = 0; i < 9; i++) _skeletonField(),
+            Row(
+              children: [
+                Expanded(child: _skeletonField()),
+                _skeletonBox(
+                  height: 40,
+                  width: 40,
+                  margin: const EdgeInsets.only(top: 30, right: 8),
+                  shape: BoxShape.circle,
+                ),
+              ],
+            ),
+            _skeletonBox(
+              height: 44,
+              width: 126,
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              radius: 10,
+            ),
+          ],
+        ).paddingSymmetric(vertical: 4, horizontal: 10),
+      ),
+    );
+  }
+
+  Widget _skeletonField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _skeletonBox(
+              height: 14, width: 100, margin: const EdgeInsets.only(bottom: 8)),
+          _skeletonBox(height: 48),
+        ],
+      ),
+    );
+  }
+
+  Widget _skeletonBox({
+    required double height,
+    double? width,
+    EdgeInsets margin = EdgeInsets.zero,
+    double radius = 8,
+    BoxShape shape = BoxShape.rectangle,
+  }) {
+    return Container(
+      height: height,
+      width: width ?? double.infinity,
+      margin: margin,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        shape: shape,
+        borderRadius: shape == BoxShape.rectangle
+            ? BorderRadius.circular(radius)
+            : null,
       ),
     );
   }

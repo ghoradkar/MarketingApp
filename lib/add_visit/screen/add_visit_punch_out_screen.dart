@@ -19,6 +19,7 @@ import 'package:marketingapp/widgets/custom_popup.dart';
 import 'package:marketingapp/widgets/custom_text.dart';
 import 'package:marketingapp/widgets/custom_text_field.dart';
 import 'package:marketingapp/widgets/my_custom_dropdown.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 
 class AddVisitPunchOutScreen extends StatefulWidget {
   static const routeName = '/add-visit-punch-out';
@@ -48,6 +49,7 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
 
   bool isLoading = true;
   bool hasError = false;
+  bool isActionLoading = false;
 
   @override
   void initState() {
@@ -257,19 +259,28 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
                                 () async {
                                   Get.back();
 
-                                  await addVisitController.insetPunchIn(
-                                      hospitalDetails!.userid.toString(),
-                                      userData!['output'][0]['EmpCode']
-                                          .toString(),
-                                      myVisitControllerController.latitude
-                                          .toString(),
-                                      myVisitControllerController.longitude
-                                          .toString());
+                                  setState(() => isActionLoading = true);
+                                  try {
+                                    await addVisitController.insetPunchIn(
+                                        hospitalDetails!.userid.toString(),
+                                        userData!['output'][0]['EmpCode']
+                                            .toString(),
+                                        myVisitControllerController.latitude
+                                            .toString(),
+                                        myVisitControllerController.longitude
+                                            .toString());
 
-                                  await addVisitController.getPunchInDetails(
-                                      userData!['output'][0]['EmpCode']
-                                          .toString(),
-                                      hospitalDetails!.userid.toString());
+                                    await addVisitController
+                                        .getPunchInDetails(
+                                            userData!['output'][0]['EmpCode']
+                                                .toString(),
+                                            hospitalDetails!.userid
+                                                .toString());
+                                  } finally {
+                                    if (mounted) {
+                                      setState(() => isActionLoading = false);
+                                    }
+                                  }
                                 },
                                 "Are you sure you want to\nPunch In ?",
                                 'assets/pointing-down.png',
@@ -301,10 +312,8 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
   }
 
   Widget _buildBody(AddVisitController controller) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+    if (isLoading || isActionLoading) {
+      return _buildSkeletonContent();
     }
 
     if (hasError) {
@@ -863,42 +872,53 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
                                           null &&
                                       myVisitControllerController.longitude !=
                                           null) {
-                                    await controller.savePunchIn(
-                                      hospitalDetails!.userid!.toString(),
-                                      "0",
-                                      userData!['output'][0]['EmpCode']
-                                          .toString(),
-                                      myVisitControllerController.latitude
-                                          .toString(),
-                                      myVisitControllerController.longitude
-                                          .toString(),
-                                      controller.selectedContName?.cPName ?? "",
-                                      controller.marketingJsonData,
-                                      controller.serviceJsonData,
-                                      controller.clientStatus!.clientStatusId!
-                                          .toString(),
-                                      controller.selectedDesig!.desgID!
-                                          .toString(),
-                                      controller
-                                          .selectedPurposeVisit!.mVisitActionID!
-                                          .toString(),
-                                      myVisitControllerController.latitude
-                                          .toString(),
-                                      myVisitControllerController.longitude
-                                          .toString(),
-                                      controller.selectedVisit!.visitTypeID!
-                                          .toString(),
-                                      controller.discussionPoints.text,
-                                      controller.selectedContName!.cPId!
-                                          .toString(),
-                                      controller.selectedContPersonStatObj!
-                                          .cPStatusId!
-                                          .toString(),
-                                      myVisitControllerController,
-                                      userData!['output'][0]['DISTLGDCODE']
-                                          .toString(),
-                                      userData?['output']?[0]?['Designation'],
-                                    );
+                                    setState(() => isActionLoading = true);
+                                    try {
+                                      await controller.savePunchIn(
+                                        hospitalDetails!.userid!.toString(),
+                                        "0",
+                                        userData!['output'][0]['EmpCode']
+                                            .toString(),
+                                        myVisitControllerController.latitude
+                                            .toString(),
+                                        myVisitControllerController.longitude
+                                            .toString(),
+                                        controller.selectedContName?.cPName ??
+                                            "",
+                                        controller.marketingJsonData,
+                                        controller.serviceJsonData,
+                                        controller
+                                            .clientStatus!.clientStatusId!
+                                            .toString(),
+                                        controller.selectedDesig!.desgID!
+                                            .toString(),
+                                        controller.selectedPurposeVisit!
+                                            .mVisitActionID!
+                                            .toString(),
+                                        myVisitControllerController.latitude
+                                            .toString(),
+                                        myVisitControllerController.longitude
+                                            .toString(),
+                                        controller.selectedVisit!.visitTypeID!
+                                            .toString(),
+                                        controller.discussionPoints.text,
+                                        controller.selectedContName!.cPId!
+                                            .toString(),
+                                        controller.selectedContPersonStatObj!
+                                            .cPStatusId!
+                                            .toString(),
+                                        myVisitControllerController,
+                                        userData!['output'][0]['DISTLGDCODE']
+                                            .toString(),
+                                        userData?['output']?[0]
+                                            ?['Designation'],
+                                      );
+                                    } finally {
+                                      if (mounted) {
+                                        setState(
+                                            () => isActionLoading = false);
+                                      }
+                                    }
                                   } else {
                                     await fetchLocation();
                                   }
@@ -1033,6 +1053,80 @@ class _AddVisitPunchOutScreenState extends State<AddVisitPunchOutScreen>
             //     textAlign: TextAlign.center),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSkeletonContent() {
+    return Shimmer(
+      colorOpacity: 0.6,
+      duration: const Duration(seconds: 2),
+      direction: const ShimmerDirection.fromLeftToRight(),
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            _skeletonBox(height: 60, margin: const EdgeInsets.all(8)),
+            _skeletonBox(height: 60, margin: const EdgeInsets.all(8)),
+            for (int i = 0; i < 4; i++) _skeletonField(),
+            Row(
+              children: [
+                Expanded(child: _skeletonField()),
+                _skeletonBox(
+                  height: 40,
+                  width: 40,
+                  margin: const EdgeInsets.only(top: 30, right: 8),
+                  shape: BoxShape.circle,
+                ),
+              ],
+            ),
+            _skeletonField(),
+            _skeletonField(),
+            _skeletonField(),
+            _skeletonField(height: 90),
+            _skeletonBox(
+              height: 44,
+              width: 200,
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              radius: 10,
+            ),
+          ],
+        ).paddingSymmetric(vertical: 4, horizontal: 15),
+      ),
+    );
+  }
+
+  Widget _skeletonField({double height = 48}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _skeletonBox(
+              height: 14, width: 100, margin: const EdgeInsets.only(bottom: 8)),
+          _skeletonBox(height: height),
+        ],
+      ),
+    );
+  }
+
+  Widget _skeletonBox({
+    required double height,
+    double? width,
+    EdgeInsets margin = EdgeInsets.zero,
+    double radius = 8,
+    BoxShape shape = BoxShape.rectangle,
+  }) {
+    return Container(
+      height: height,
+      width: width ?? double.infinity,
+      margin: margin,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade300,
+        shape: shape,
+        borderRadius: shape == BoxShape.rectangle
+            ? BorderRadius.circular(radius)
+            : null,
       ),
     );
   }

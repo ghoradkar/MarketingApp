@@ -96,7 +96,6 @@ class AddVisitController extends GetxController {
   // }
 
   getRouteFlag(String? userID) async {
-    CustomMessage.showLoader();
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.checkRouteFlag}?UserID=$userID");
 
@@ -111,9 +110,6 @@ class AddVisitController extends GetxController {
         "-${today.month.toString().padLeft(2, '0')}"
         "-${today.day.toString().padLeft(2, '0')}";
     if (response.statusCode == 200) {
-      // isLoading = false;
-      CustomMessage.hideLoader();
-
       //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
@@ -125,8 +121,6 @@ class AddVisitController extends GetxController {
         checkRouteFlagModel = CheckRouteFlagModel.fromJson(data);
 
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
         CustomMessage.toast(status);
       }
     }
@@ -210,10 +204,6 @@ class AddVisitController extends GetxController {
       MyVisitControllerController myVisitControllerController,
       String districtId,
       String userType) async {
-    // isLoading = true;
-    // update();
-    CustomMessage.showLoader();
-
     final uri =
         Uri.parse("${ApiConstants.baseUrl1}${ApiConstants.savePunchIn}");
 
@@ -245,8 +235,6 @@ class AddVisitController extends GetxController {
     var ioStreamedResponse = await ioClient.send(request);
 
     if (ioStreamedResponse.statusCode == 200) {
-      CustomMessage.hideLoader();
-
       final data = json.decode(await ioStreamedResponse.stream.bytesToString());
       if (data['status'] == 'Success') {
         status = data['message'];
@@ -291,8 +279,6 @@ class AddVisitController extends GetxController {
         punchInDetailsModel = null;
 
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
@@ -323,10 +309,6 @@ class AddVisitController extends GetxController {
   }
 
   insetPunchIn(String userID, String punchId, String lat, String long) async {
-    // isLoading = true;
-    // update();
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl1}${ApiConstants.punchIn}?UserID=$userID&PunchInBy=$punchId&PunchInLatitude=$lat&PunchInLogitude=$long");
 
@@ -337,9 +319,6 @@ class AddVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      // isLoading = false;
-      CustomMessage.hideLoader();
-
       //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
@@ -349,8 +328,6 @@ class AddVisitController extends GetxController {
         CustomMessage.toast(data['message']);
       } else {
         status = data['message'];
-        // isLoading = false;
-        CustomMessage.hideLoader();
       }
     }
     update();
@@ -560,8 +537,6 @@ class AddVisitController extends GetxController {
 
   startRoute(String? userID, String startRoute, String lat, String long,
       String routeDate, String createdBy) async {
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.startRoute}?UserID=$userID&StartRoute=$startRoute&StartLatitude=$lat&StartLongitude=$long&RouteDate=$routeDate&Createdby=$createdBy");
 
@@ -572,8 +547,6 @@ class AddVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      CustomMessage.hideLoader();
-
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
         startRouteModel = StartRouteModel.fromJson(data);
@@ -581,18 +554,12 @@ class AddVisitController extends GetxController {
         status = data['message'];
       } else {
         status = data['message'];
-
-        CustomMessage.hideLoader();
       }
     }
     update();
   }
 
   getCustomerList(String userID) async {
-    // isLoading = true;
-    // update();
-    CustomMessage.showLoader();
-
     final uri = Uri.parse(
         "${ApiConstants.baseUrl}${ApiConstants.customerList}?DISTLGDCODE=$userID");
 
@@ -603,9 +570,6 @@ class AddVisitController extends GetxController {
     debugPrint("response.body : ${response.body}");
 
     if (response.statusCode == 200) {
-      // isLoading = false;
-      CustomMessage.hideLoader();
-
       //getDeviceDetails
       final data = json.decode(response.body);
       if (data['status'] == 'Success') {
@@ -614,10 +578,8 @@ class AddVisitController extends GetxController {
         status = data['message'];
       } else {
         status = data['message'];
-        // isLoading = false;
         customerListModel = null;
         filteredCustomerList.clear();
-        CustomMessage.hideLoader();
       }
     }
     update();
